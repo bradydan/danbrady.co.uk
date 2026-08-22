@@ -26,8 +26,7 @@
 
   /* Type scale */
   --text-display: clamp(21px, 2.2vw, 32px);
-  --text-page-title: clamp(28px, 4vw, 44px);
-  --text-section-title: 20px;
+  --text-page-title: 34px;
   --text-body: 16px;
   --text-caption: 15px;
   --text-meta: 12px;
@@ -122,14 +121,7 @@ figcaption {
 .page-title {
   font-size: var(--text-page-title);
   font-weight: 500;
-  line-height: var(--leading-tight);
-  margin: 0;
-  max-width: 18ch;
-}
-
-.section-title {
-  font-size: var(--text-section-title);
-  font-weight: 500;
+  line-height: 1.2;
   margin: 0;
 }
 
@@ -141,7 +133,6 @@ figcaption {
 
 /* Space a prose block or button that follows a heading. */
 .page-title + .prose,
-.section-title + .prose,
 .prose + .button {
   margin-top: var(--space-16);
 }

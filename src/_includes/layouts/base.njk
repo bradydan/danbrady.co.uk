@@ -21,6 +21,21 @@
 {{ content | safe }}
 </main>
 {% include "partials/footer.njk" %}
+<script>
+// Decode anti-harvest email links. Kept inline so it runs without an extra
+// request; the offset must match encodeEmail() in _data/site.js.
+(function () {
+  document.querySelectorAll("a.eml").forEach(function (a) {
+    var e = a.getAttribute("data-e");
+    if (!e) return;
+    var addr = e.split(",").map(function (n) {
+      return String.fromCharCode(parseInt(n, 10) - 13);
+    }).join("");
+    a.setAttribute("href", "mailto:" + addr);
+    a.textContent = addr;
+  });
+})();
+</script>
 <script src="/js/site.js" defer></script>
 <script src="/js/lightbox.js" defer></script>
 </body>

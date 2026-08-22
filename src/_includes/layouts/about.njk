@@ -7,6 +7,6 @@ layout: layouts/base.njk
     {{ content | safe }}
   </div>
   <p class="meta about-enquiries">
-    Enquiries — <a class="link-accent" href="mailto:{{ site.social.email }}">{{ site.social.email }}</a>
+    Enquiries — {% set emlText = "email Dan Brady" %}{% include "partials/email-obfuscated.njk" %}
   </p>
 </section>

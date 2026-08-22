@@ -29,7 +29,7 @@ eleventyComputed:
 
   <div class="photo-header">
     <div>
-      <h1 class="section-title">{% if photo.caption %}{{ photo.caption }}{% else %}{{ photo.projectTitle }} — frame {{ photo.position }}{% endif %}</h1>
+      <h1 class="page-title">{% if photo.caption %}{{ photo.caption }}{% else %}{{ photo.projectTitle }} — frame {{ photo.position }}{% endif %}</h1>
       <p class="project-meta">{{ photo.location }}, {{ photo.year }}</p>
     </div>
     {{ linkButton(photo.projectUrl, "All " + photo.total + " frames") }}

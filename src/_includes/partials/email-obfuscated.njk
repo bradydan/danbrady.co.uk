@@ -1,0 +1,5 @@
+{# Anti-harvest email link. The source contains only opaque shifted char
+   codes in data-e; the hydrator in base.njk decodes it and rewrites both
+   href and textContent. Set `emlText` before including to change the
+   pre-hydration label. #}
+<a class="eml link-accent" href="/contact/" data-e="{{ site.social.emailEncoded }}">{{ emlText | default("Email Dan Brady") }}</a>
