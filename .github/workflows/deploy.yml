@@ -1,0 +1,30 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - run: npm ci
+      - run: npm run build
+
+      - name: Deploy to Bunny Storage
+        uses: ayeressian/bunnycdn-storage-deploy@v2.3.0
+        with:
+          source: "_site"
+          destination: ""
+          storageZoneName: ${{ secrets.BUNNY_STORAGE_ZONE }}
+          storagePassword: ${{ secrets.BUNNY_STORAGE_PASSWORD }}
+          accessKey: ${{ secrets.BUNNY_STORAGE_PASSWORD }}
+          upload: "true"
+          remove: "true"
