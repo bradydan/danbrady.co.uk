@@ -12,12 +12,12 @@ eleventyComputed:
   description: "{{ photo.alt }} — from {{ photo.projectTitle }}, {{ photo.location }}, {{ photo.year }}, by Dan Brady."
   isPhoto: true
 ---
-<article style="padding: calc(var(--space-8) * 3) calc(var(--space-8) * 2); max-width: 1100px; margin: 0 auto">
+<article class="photo">
 
-  <nav style="font-size:12px;opacity:0.6;margin-bottom:calc(var(--space-8) * 1.5)">
-    <a href="/projects/" style="color:inherit;text-decoration:none">Projects</a>
+  <nav class="photo-breadcrumb">
+    <a class="link-plain" href="/projects/">Projects</a>
     <span aria-hidden="true"> / </span>
-    <a href="{{ photo.projectUrl }}" style="color:inherit;text-decoration:none">{{ photo.projectTitle }}</a>
+    <a class="link-plain" href="{{ photo.projectUrl }}">{{ photo.projectTitle }}</a>
     <span aria-hidden="true"> / </span>
     <span>Frame {{ photo.position }} of {{ photo.total }}</span>
   </nav>
@@ -26,30 +26,25 @@ eleventyComputed:
     {% image photo.src, photo.alt, null, "full", true %}
   </div>
 
-  <div style="margin-top:calc(var(--space-8) * 1.5);display:flex;flex-wrap:wrap;gap:var(--space-8);justify-content:space-between;align-items:baseline">
+  <div class="photo-header">
     <div>
-      {% if photo.caption %}
-      <h1 style="font-size:20px;font-weight:500;margin:0">{{ photo.caption }}</h1>
-      {% else %}
-      <h1 style="font-size:20px;font-weight:500;margin:0">{{ photo.projectTitle }} — frame {{ photo.position }}</h1>
-      {% endif %}
-      <p style="opacity:0.6;font-size:13px;margin:var(--space-4) 0 0">{{ photo.location }}, {{ photo.year }}</p>
+      <h1 class="section-title">{% if photo.caption %}{{ photo.caption }}{% else %}{{ photo.projectTitle }} — frame {{ photo.position }}{% endif %}</h1>
+      <p class="project-meta">{{ photo.location }}, {{ photo.year }}</p>
     </div>
-    <a href="{{ photo.projectUrl }}" style="color:var(--color-accent);text-decoration:none;font-size:12px;text-transform:uppercase;letter-spacing:0.08em;border:1px solid var(--color-accent);border-radius:var(--radius-md);padding:var(--space-4) var(--space-8)">All {{ photo.total }} frames</a>
+    <a class="button" href="{{ photo.projectUrl }}">All {{ photo.total }} frames</a>
   </div>
 
-  <p style="max-width:60ch;font-size:14px;opacity:0.85;margin-top:calc(var(--space-8) * 1.5)">
-    From <a href="{{ photo.projectUrl }}" style="color:var(--color-accent)">{{ photo.projectTitle }}</a>, a documentary project by {{ site.author }}. {{ photo.projectDescription }}
+  <p class="photo-context">
+    From <a class="link-accent" href="{{ photo.projectUrl }}">{{ photo.projectTitle }}</a>, a documentary project by {{ site.author }}. {{ photo.projectDescription }}
   </p>
 
-  <nav style="margin-top:calc(var(--space-8) * 3);display:flex;justify-content:space-between;gap:var(--space-8);border-top:1px solid var(--color-divider);padding-top:var(--space-8);font-size:13px">
+  <nav class="photo-pager">
     {% if photo.prev %}
-    <a rel="prev" href="/projects/{{ photo.projectSlug }}/{{ photo.prev.slug }}/" style="color:var(--color-text);text-decoration:none;opacity:0.75">‹ {{ photo.prev.caption or "Previous frame" }}</a>
-    {% else %}<span></span>{% endif %}
-
+    <a rel="prev" href="/projects/{{ photo.projectSlug }}/{{ photo.prev.slug }}/">‹ {{ photo.prev.caption or "Previous frame" }}</a>
+    {% endif %}
     {% if photo.next %}
-    <a rel="next" href="/projects/{{ photo.projectSlug }}/{{ photo.next.slug }}/" style="color:var(--color-text);text-decoration:none;opacity:0.75;text-align:right">{{ photo.next.caption or "Next frame" }} ›</a>
-    {% else %}<span></span>{% endif %}
+    <a rel="next" href="/projects/{{ photo.projectSlug }}/{{ photo.next.slug }}/">{{ photo.next.caption or "Next frame" }} ›</a>
+    {% endif %}
   </nav>
 
 </article>

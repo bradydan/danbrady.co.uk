@@ -1,12 +1,12 @@
 ---
 layout: layouts/base.njk
 ---
-<section style="padding: calc(var(--space-8) * 5) calc(var(--space-8) * 2); max-width: 1100px; margin: 0 auto">
-  <h1 style="font-size: clamp(28px, 4vw, 44px); font-weight: 500; line-height: 1.15; margin: 0; max-width: 18ch">{{ title }}</h1>
-  <div style="margin-top: calc(var(--space-8) * 2.5); max-width: 62ch; font-size: clamp(15px, 1.3vw, 17px); line-height: 1.65">
+<section class="page page--centred">
+  <h1 class="page-title">{{ title }}</h1>
+  <div class="prose about-body">
     {{ content | safe }}
   </div>
-  <p style="margin-top: calc(var(--space-8) * 3); font-size: 13px; opacity: 0.6">
-    Enquiries — <a href="mailto:{{ site.social.email }}" style="color: var(--color-accent)">{{ site.social.email }}</a>
+  <p class="meta about-enquiries">
+    Enquiries — <a class="link-accent" href="mailto:{{ site.social.email }}">{{ site.social.email }}</a>
   </p>
 </section>

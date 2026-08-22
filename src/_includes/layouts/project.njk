@@ -1,28 +1,28 @@
 ---
 layout: layouts/base.njk
 ---
-<section style="padding: calc(var(--space-8) * 4) calc(var(--space-8) * 2)">
-  <h1 style="font-size: 20px; font-weight: 500">{{ title }}</h1>
-  <p style="opacity: 0.6; font-size: 13px">{{ location }}, {{ year }} — {{ photos | length }} frames</p>
-  <p style="max-width: 60ch; font-size: 14px; opacity: 0.85">{{ description }}</p>
+<section class="page">
+  <h1 class="section-title">{{ title }}</h1>
+  <p class="project-meta">{{ location }}, {{ year }} — {{ photos | length }} frames</p>
+  <p class="project-description">{{ description }}</p>
 
-  <div class="gallery-grid" data-lightbox-gallery style="margin-top: calc(var(--space-8) * 3)">
+  <div class="gallery-grid" data-lightbox-gallery>
     {% for photo in photos %}
     {# A real link, so each frame is shareable and works without JS; the
        lightbox intercepts the click when JS is available. #}
-    <a class="gallery-item" href="/projects/{{ page.fileSlug }}/{{ photo.src | photoSlug }}/" data-lightbox-open data-index="{{ loop.index0 }}" style="display:block;color:inherit;text-decoration:none">
+    <a class="gallery-item" href="/projects/{{ page.fileSlug }}/{{ photo.src | photoSlug }}/" data-lightbox-open data-index="{{ loop.index0 }}">
       {% image photo.src, photo.alt, photo.caption, "full" %}
     </a>
     {% endfor %}
   </div>
 
-  <div class="lightbox" data-lightbox hidden role="dialog" aria-modal="true" aria-label="Photograph viewer" style="position:fixed;inset:0;z-index:50;background:rgba(0,0,0,0.92);align-items:center;justify-content:center;flex-direction:column">
-    <button type="button" data-lightbox-close aria-label="Close viewer" style="position:absolute;top:var(--space-8);right:var(--space-8);background:transparent;border:0;color:#fff;font-size:28px;cursor:pointer">×</button>
-    <button type="button" data-lightbox-prev aria-label="Previous photo" style="position:absolute;left:var(--space-8);top:50%;transform:translateY(-50%);background:transparent;border:0;color:#fff;font-size:28px;cursor:pointer">‹</button>
-    <div data-lightbox-content style="max-width:90vw;max-height:80vh"></div>
-    <p data-lightbox-caption style="color:#fff;opacity:0.8;font-size:13px;margin-top:var(--space-4)"></p>
-    <a data-lightbox-permalink href="#" style="color:#fff;opacity:0.55;font-size:12px;margin-top:var(--space-3);text-decoration:underline">Open this frame's page</a>
-    <button type="button" data-lightbox-next aria-label="Next photo" style="position:absolute;right:var(--space-8);top:50%;transform:translateY(-50%);background:transparent;border:0;color:#fff;font-size:28px;cursor:pointer">›</button>
+  <div class="lightbox" data-lightbox hidden role="dialog" aria-modal="true" aria-label="Photograph viewer">
+    <button type="button" class="lightbox-control lightbox-control--close" data-lightbox-close aria-label="Close viewer">×</button>
+    <button type="button" class="lightbox-control lightbox-control--prev" data-lightbox-prev aria-label="Previous photo">‹</button>
+    <div class="lightbox-content" data-lightbox-content></div>
+    <p class="lightbox-caption" data-lightbox-caption></p>
+    <a class="lightbox-permalink" data-lightbox-permalink href="#">Open this frame's page</a>
+    <button type="button" class="lightbox-control lightbox-control--next" data-lightbox-next aria-label="Next photo">›</button>
   </div>
 </section>
 

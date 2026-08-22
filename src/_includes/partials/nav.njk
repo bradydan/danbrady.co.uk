@@ -14,11 +14,11 @@
   </button>
 </header>
 <div class="mobile-menu" id="mobile-menu" data-mobile-menu>
-  <div class="site-header" style="padding:0">
+  <div class="mobile-menu-header">
     <span class="brand">{{ site.author }}</span>
-    <button type="button" data-menu-close aria-label="Close menu" style="background:transparent;border:0;color:var(--color-text);font-size:22px;cursor:pointer">×</button>
+    <button type="button" class="mobile-menu-close" data-menu-close aria-label="Close menu">×</button>
   </div>
-  <nav style="margin-top:calc(var(--space-8) * 3);display:flex;flex-direction:column">
+  <nav class="mobile-menu-nav">
     <a href="/projects/">Projects</a>
     <a href="/about/">About</a>
     <a href="/contact/">Contact</a>
