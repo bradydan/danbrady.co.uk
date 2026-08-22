@@ -12,6 +12,7 @@ eleventyComputed:
   description: "{{ photo.alt }} — from {{ photo.projectTitle }}, {{ photo.location }}, {{ photo.year }}, by Dan Brady."
   isPhoto: true
 ---
+{% from "macros/ui.njk" import linkButton %}
 <article class="photo">
 
   <nav class="photo-breadcrumb">
@@ -31,7 +32,7 @@ eleventyComputed:
       <h1 class="section-title">{% if photo.caption %}{{ photo.caption }}{% else %}{{ photo.projectTitle }} — frame {{ photo.position }}{% endif %}</h1>
       <p class="project-meta">{{ photo.location }}, {{ photo.year }}</p>
     </div>
-    <a class="button" href="{{ photo.projectUrl }}">All {{ photo.total }} frames</a>
+    {{ linkButton(photo.projectUrl, "All " + photo.total + " frames") }}
   </div>
 
   <p class="photo-context">

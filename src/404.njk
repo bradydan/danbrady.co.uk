@@ -5,8 +5,9 @@ description: That page could not be found.
 permalink: /404.html
 eleventyExcludeFromCollections: true
 ---
+{% from "macros/ui.njk" import linkButton %}
 <section class="page page--narrow">
   <h1 class="page-title">Page not found</h1>
   <p class="prose muted">That page doesn't exist — it may have moved, or the link may be wrong.</p>
-  <a class="button" href="/projects/">View all projects</a>
+  {{ linkButton("/projects/", "View all projects") }}
 </section>
