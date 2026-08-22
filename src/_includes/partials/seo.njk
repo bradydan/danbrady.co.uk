@@ -5,11 +5,12 @@
 <meta name="description" content="{{ pageDescription }}">
 <link rel="canonical" href="{{ canonicalUrl }}">
 
-<meta property="og:type" content="{% if photos %}article{% else %}website{% endif %}">
+<meta property="og:type" content="{% if photos or isPhoto %}article{% else %}website{% endif %}">
 <meta property="og:title" content="{{ pageTitle }}">
 <meta property="og:description" content="{{ pageDescription }}">
 <meta property="og:url" content="{{ canonicalUrl }}">
-{% if ogImage %}<meta property="og:image" content="{{ site.url }}{{ ogImage }}">{% endif %}
+{% if isPhoto %}<meta property="og:image" content="{{ site.url }}{{ photo.src | photoUrl }}">
+{% elif ogImage %}<meta property="og:image" content="{{ site.url }}{{ ogImage }}">{% endif %}
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{{ pageTitle }}">
@@ -23,6 +24,37 @@
   "name": "{{ site.author }}",
   "url": "{{ site.url }}",
   "jobTitle": "Documentary Photographer"
+}
+</script>
+{% endif %}
+
+{% if isPhoto %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Photograph",
+  "name": {{ (photo.caption or photo.alt) | dump | safe }},
+  "description": {{ photo.alt | dump | safe }},
+  "url": "{{ canonicalUrl }}",
+  "contentUrl": "{{ site.url }}{{ photo.src | photoUrl }}",
+  "creator": {
+    "@type": "Person",
+    "name": {{ site.author | dump | safe }},
+    "url": "{{ site.url }}"
+  },
+  "copyrightHolder": {
+    "@type": "Person",
+    "name": {{ site.author | dump | safe }}
+  },
+  "contentLocation": {
+    "@type": "Place",
+    "name": {{ photo.location | dump | safe }}
+  },
+  "isPartOf": {
+    "@type": "ImageGallery",
+    "name": {{ photo.projectTitle | dump | safe }},
+    "url": "{{ site.url }}{{ photo.projectUrl }}"
+  }
 }
 </script>
 {% endif %}

@@ -8,9 +8,11 @@ layout: layouts/base.njk
 
   <div class="gallery-grid" data-lightbox-gallery style="margin-top: calc(var(--space-8) * 3)">
     {% for photo in photos %}
-    <button type="button" class="gallery-item" data-lightbox-open data-index="{{ loop.index0 }}" style="all:unset;cursor:pointer;display:block">
+    {# A real link, so each frame is shareable and works without JS; the
+       lightbox intercepts the click when JS is available. #}
+    <a class="gallery-item" href="/projects/{{ page.fileSlug }}/{{ photo.src | photoSlug }}/" data-lightbox-open data-index="{{ loop.index0 }}" style="display:block;color:inherit;text-decoration:none">
       {% image photo.src, photo.alt, photo.caption, "full" %}
-    </button>
+    </a>
     {% endfor %}
   </div>
 
@@ -19,6 +21,7 @@ layout: layouts/base.njk
     <button type="button" data-lightbox-prev aria-label="Previous photo" style="position:absolute;left:var(--space-8);top:50%;transform:translateY(-50%);background:transparent;border:0;color:#fff;font-size:28px;cursor:pointer">‹</button>
     <div data-lightbox-content style="max-width:90vw;max-height:80vh"></div>
     <p data-lightbox-caption style="color:#fff;opacity:0.8;font-size:13px;margin-top:var(--space-4)"></p>
+    <a data-lightbox-permalink href="#" style="color:#fff;opacity:0.55;font-size:12px;margin-top:var(--space-3);text-decoration:underline">Open this frame's page</a>
     <button type="button" data-lightbox-next aria-label="Next photo" style="position:absolute;right:var(--space-8);top:50%;transform:translateY(-50%);background:transparent;border:0;color:#fff;font-size:28px;cursor:pointer">›</button>
   </div>
 </section>

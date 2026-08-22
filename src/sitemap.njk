@@ -3,4 +3,42 @@ permalink: /sitemap.xml
 layout: null
 eleventyExcludeFromCollections: true
 ---
-{% sitemap collections.all %}
+{#-
+  Built by hand rather than via a plugin: the sitemap needs per-photograph
+  <image:image> entries, and paginated photo pages are not reliably present in
+  collections.all at the time this template renders, so their URLs come from
+  the `photos` collection directly.
+-#}
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+{%- for item in collections.all %}
+{%- if not item.data.isPhoto %}
+  <url>
+    <loc>{{ site.url }}{{ item.url }}</loc>
+    <lastmod>{{ item.date.toISOString() }}</lastmod>
+{%- for photo in item.data.photos %}
+    <image:image>
+      <image:loc>{{ site.url }}{{ photo.src | photoUrl }}</image:loc>
+{%- if photo.caption %}
+      <image:caption>{{ photo.caption | escape }}</image:caption>
+{%- endif %}
+      <image:title>{{ (photo.caption or photo.alt) | escape }}</image:title>
+    </image:image>
+{%- endfor %}
+  </url>
+{%- endif %}
+{%- endfor %}
+{%- for photo in collections.photos %}
+  <url>
+    <loc>{{ site.url }}{{ photo.url }}</loc>
+    <lastmod>{{ photo.date.toISOString() }}</lastmod>
+    <image:image>
+      <image:loc>{{ site.url }}{{ photo.src | photoUrl }}</image:loc>
+{%- if photo.caption %}
+      <image:caption>{{ photo.caption | escape }}</image:caption>
+{%- endif %}
+      <image:title>{{ (photo.caption or photo.alt) | escape }}</image:title>
+    </image:image>
+  </url>
+{%- endfor %}
+</urlset>
