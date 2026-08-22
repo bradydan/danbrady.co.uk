@@ -1,8 +1,22 @@
 ---
-title: Dan Brady
+layout: layouts/base.njk
+title: Home
+description: Documentary photography by Dan Brady — five projects shot over weeks in one place.
 ---
-<!doctype html>
-<html lang="en">
-<head><meta charset="utf-8"><title>{{ title }}</title></head>
-<body><h1>{{ title }}</h1></body>
-</html>
+<section style="padding: calc(var(--space-8) * 4) calc(var(--space-8) * 2)">
+  <p style="max-width: 32ch; font-size: clamp(20px, 2.2vw, 30px)">Documentary work on gatherings — the hours before and after the thing everyone came for.</p>
+  <p style="max-width: 40ch; opacity: 0.7; font-size: 14px">{{ site.author }} is a photographer based near Newcastle-upon-Tyne. Five projects, shot over weeks in one place.</p>
+  <a href="/projects/" style="display:inline-block;margin-top:var(--space-8);color:var(--color-accent);text-decoration:none;border:1px solid var(--color-accent);border-radius:var(--radius-md);padding:var(--space-4) var(--space-8);font-size:12px;text-transform:uppercase;letter-spacing:0.08em">All projects</a>
+
+  <div class="projects-grid" style="margin-top: calc(var(--space-8) * 4)">
+    {% for project in collections.projects %}
+    <a href="/projects/{{ project.fileSlug }}/" style="text-decoration:none;color:var(--color-text)">
+      {% image project.data.cover, "Cover photo for " + project.data.title, null, "cover" %}
+      <div style="display:flex;justify-content:space-between;margin-top:var(--space-4);font-size:12px;opacity:0.6">
+        <span>{{ project.data.title }} — {{ project.data.location }}, {{ project.data.year }}</span>
+        <span>{{ project.data.photos | length }} frames</span>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
