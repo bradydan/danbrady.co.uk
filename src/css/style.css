@@ -165,7 +165,7 @@ figcaption {
   justify-content: space-between;
   gap: var(--space-8);
   margin-top: var(--space-4);
-  font-size: var(--text-meta);
+  font-size: 14px;
   opacity: 0.55;
 }
 
