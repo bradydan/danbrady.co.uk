@@ -26,10 +26,12 @@
   function open(index) {
     render(index);
     lightbox.hidden = false;
+    lightbox.style.display = "flex";
   }
 
   function close() {
     lightbox.hidden = true;
+    lightbox.style.display = "none";
   }
 
   galleryEl.querySelectorAll("[data-lightbox-open]").forEach(function (btn) {
