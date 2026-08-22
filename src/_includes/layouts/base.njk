@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+{% include "partials/seo.njk" %}
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+{% include "partials/nav.njk" %}
+<main>
+{{ content | safe }}
+</main>
+<script src="/js/site.js" defer></script>
+<script src="/js/lightbox.js" defer></script>
+</body>
+</html>
