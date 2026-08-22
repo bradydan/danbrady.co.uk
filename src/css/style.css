@@ -30,7 +30,9 @@ html, body {
 
 * { box-sizing: border-box; }
 
-img { max-width: 100%; display: block; }
+img { max-width: 100%; height: auto; display: block; }
+
+picture { display: block; }
 
 .site-header {
   position: sticky;
@@ -129,6 +131,7 @@ img { max-width: 100%; display: block; }
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: calc(var(--space-8) * 2);
+  align-items: start;
 }
 
 figure { margin: 0; }
