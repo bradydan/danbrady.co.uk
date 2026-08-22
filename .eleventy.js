@@ -1,9 +1,11 @@
 const imageShortcode = require("./src/_includes/shortcodes/image.js");
 const sitemap = require("@quasibit/eleventy-plugin-sitemap");
 const site = require("./src/_data/site.js");
+const { largestJpegUrl } = require("./lib/photo.js");
 
 module.exports = function (eleventyConfig) {
   eleventyConfig.addNunjucksAsyncShortcode("image", imageShortcode);
+  eleventyConfig.addFilter("photoUrl", (src) => largestJpegUrl(src));
   eleventyConfig.addPassthroughCopy("src/css");
   eleventyConfig.addPassthroughCopy("src/js");
   eleventyConfig.addPassthroughCopy("src/images");

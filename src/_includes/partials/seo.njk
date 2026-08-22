@@ -39,7 +39,7 @@
     {% for photo in photos %}
     {
       "@type": "ImageObject",
-      "contentUrl": "{{ site.url }}/img/{{ photo.src | replace('/', '-') | replace('.jpg', '') }}-1600w.jpeg",
+      "contentUrl": "{{ site.url }}{{ photo.src | photoUrl }}",
       "description": "{{ photo.caption or photo.alt }}",
       "creator": "{{ site.author }}"
     }{% if not loop.last %},{% endif %}
