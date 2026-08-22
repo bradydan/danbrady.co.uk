@@ -1,0 +1,16 @@
+{
+  "name": "danbrady.co.uk",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Documentary photography portfolio for Dan Brady.",
+  "scripts": {
+    "build": "eleventy",
+    "serve": "eleventy --serve",
+    "debug": "DEBUG=Eleventy* eleventy"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "^3.0.0",
+    "@11ty/eleventy-img": "^5.0.0",
+    "@quasibit/eleventy-plugin-sitemap": "^2.2.0"
+  }
+}
