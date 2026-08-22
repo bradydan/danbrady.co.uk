@@ -1,4 +1,5 @@
 ---
+layout: layouts/project.njk
 title: Feast Day
 location: Oaxaca
 year: 2022

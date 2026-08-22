@@ -1,0 +1,28 @@
+---
+layout: layouts/base.njk
+---
+<section style="padding: calc(var(--space-8) * 4) calc(var(--space-8) * 2)">
+  <h1 style="font-size: 20px; font-weight: 500">{{ title }}</h1>
+  <p style="opacity: 0.6; font-size: 13px">{{ location }}, {{ year }} — {{ photos | length }} frames</p>
+  <p style="max-width: 60ch; font-size: 14px; opacity: 0.85">{{ description }}</p>
+
+  <div class="gallery-grid" data-lightbox-gallery style="margin-top: calc(var(--space-8) * 3)">
+    {% for photo in photos %}
+    <button type="button" class="gallery-item" data-lightbox-open data-index="{{ loop.index0 }}" style="all:unset;cursor:pointer;display:block">
+      {% image photo.src, photo.alt, photo.caption, "full" %}
+    </button>
+    {% endfor %}
+  </div>
+
+  <div class="lightbox" data-lightbox hidden style="position:fixed;inset:0;z-index:50;background:rgba(0,0,0,0.92);display:flex;align-items:center;justify-content:center;flex-direction:column">
+    <button type="button" data-lightbox-close aria-label="Close viewer" style="position:absolute;top:var(--space-8);right:var(--space-8);background:transparent;border:0;color:#fff;font-size:28px;cursor:pointer">×</button>
+    <button type="button" data-lightbox-prev aria-label="Previous photo" style="position:absolute;left:var(--space-8);top:50%;transform:translateY(-50%);background:transparent;border:0;color:#fff;font-size:28px;cursor:pointer">‹</button>
+    <div data-lightbox-content style="max-width:90vw;max-height:80vh"></div>
+    <p data-lightbox-caption style="color:#fff;opacity:0.8;font-size:13px;margin-top:var(--space-4)"></p>
+    <button type="button" data-lightbox-next aria-label="Next photo" style="position:absolute;right:var(--space-8);top:50%;transform:translateY(-50%);background:transparent;border:0;color:#fff;font-size:28px;cursor:pointer">›</button>
+  </div>
+</section>
+
+<script type="application/json" data-lightbox-data>
+{{ photos | dump | safe }}
+</script>

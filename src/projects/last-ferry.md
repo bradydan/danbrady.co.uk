@@ -1,4 +1,5 @@
 ---
+layout: layouts/project.njk
 title: The Last Ferry
 location: Isle of Wight
 year: 2021

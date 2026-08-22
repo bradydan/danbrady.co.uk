@@ -1,4 +1,5 @@
 ---
+layout: layouts/project.njk
 title: Quiet Hours
 location: Newcastle-upon-Tyne
 year: 2024

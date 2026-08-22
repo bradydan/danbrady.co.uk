@@ -1,4 +1,5 @@
 ---
+layout: layouts/project.njk
 title: Night Shift
 location: Rotterdam
 year: 2023

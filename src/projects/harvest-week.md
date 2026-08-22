@@ -1,4 +1,5 @@
 ---
+layout: layouts/project.njk
 title: Harvest Week
 location: Kent
 year: 2020
