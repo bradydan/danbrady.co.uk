@@ -48,19 +48,42 @@ locally-generated placeholder JPEGs (`scripts/generate-placeholders.py`,
 a one-off dev script, not part of the build) — swap in real photos by
 replacing files in `src/images/` with the same relative paths.
 
+**Per-photo pages**: `src/photo.njk` paginates (`size: 1`) over the
+`photos` collection to give every frame its own URL at
+`/projects/<project-slug>/<frame-slug>/`, with `Photograph` JSON-LD,
+prev/next navigation and project context. The `photos` collection
+(`.eleventy.js`) flattens all projects' photos and precomputes `url`,
+`slug`, `date`, `position`/`total` and sibling links. Gallery items on
+project pages are real `<a>` links to these pages, so frames are
+shareable and work without JS; `lightbox.js` intercepts plain
+left-clicks (leaving modified clicks alone) and surfaces a permalink.
+
 **SEO**: `src/_includes/partials/seo.njk`, included from
 `layouts/base.njk`, reads page front matter (`title`, `description`,
-`ogImage`, `isAbout`, `photos`) with sitewide fallback from
+`ogImage`, `isAbout`, `isPhoto`, `photos`) with sitewide fallback from
 `src/_data/site.js`. Emits OG/Twitter tags and JSON-LD: `Person` when
-`isAbout: true` is set (only `about.md`), `ImageGallery`/`ImageObject`
-when `photos` is present (project pages) — the `contentUrl` in that
-JSON-LD is constructed to match `eleventy-img`'s `filenameFormat` in
-`shortcodes/image.js`, so if one changes, check the other.
+`isAbout: true` (only `about.md`), `Photograph` when `isPhoto: true`
+(per-photo pages), `ImageGallery`/`ImageObject` when `photos` is present
+(project pages).
 
-**Sitemap**: `@quasibit/eleventy-plugin-sitemap` requires an explicit
-template calling its shortcode — `src/sitemap.njk` does this
-(`{% sitemap collections.all %}`); the plugin registration alone does not
-generate `sitemap.xml`.
+**Image URLs**: never reconstruct `eleventy-img` output filenames by
+string manipulation — a source image narrower than a configured width
+has no file at that width, because eleventy-img does not upscale. Use
+the `photoUrl` filter / `largestJpegUrl()` in `lib/photo.js`, which
+derives URLs from eleventy-img's own `statsSync` metadata. `lib/photo.js`
+is also the single source of the eleventy-img options shared by the
+shortcode and the stats lookups; they must stay identical or generated
+URLs won't match the files on disk.
+
+**Sitemap**: `src/sitemap.njk` is hand-written (no plugin) because it
+needs per-photograph `<image:image>` entries.
+`@quasibit/eleventy-plugin-sitemap` was removed: it spreads the Eleventy
+template object, which triggers the `templateContent` getter and crashes
+on paginated templates in Eleventy 3. Photo-page URLs are iterated from
+`collections.photos` rather than `collections.all`, because paginated
+pages are not reliably present in `collections.all` when the sitemap
+renders — if you switch that loop back to `collections.all`, only the
+first paginated page will appear.
 
 **Lightbox/mobile menu**: vanilla JS, no framework —
 `src/js/lightbox.js` (project-page gallery viewer, reads photo data from
