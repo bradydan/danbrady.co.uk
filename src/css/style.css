@@ -139,9 +139,26 @@ figcaption {
   opacity: 0.6;
 }
 
+.scroller {
+  overflow-y: auto;
+}
+
+[data-hero-image] figure,
+[data-hero-image] picture,
+[data-hero-image] img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 @media (max-width: 900px) {
   .nav-desktop { display: none !important; }
   .nav-burger { display: flex !important; }
+  [data-inset] { width: 100% !important; margin-left: 0 !important; }
+  [data-hero] { grid-template-columns: minmax(0, 1fr) !important; align-items: start; }
+  [data-hero-image] { height: 62vh !important; }
   .projects-grid { grid-template-columns: minmax(0, 1fr); }
   .gallery-grid { grid-template-columns: minmax(0, 1fr); }
 }

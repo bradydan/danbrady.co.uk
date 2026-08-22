@@ -3,20 +3,40 @@ layout: layouts/base.njk
 title: Home
 description: Documentary photography by Dan Brady — five projects shot over weeks in one place.
 ---
-<section style="padding: calc(var(--space-8) * 4) calc(var(--space-8) * 2)">
-  <p style="max-width: 32ch; font-size: clamp(20px, 2.2vw, 30px)">Documentary work on gatherings — the hours before and after the thing everyone came for.</p>
-  <p style="max-width: 40ch; opacity: 0.7; font-size: 14px">{{ site.author }} is a photographer based near Newcastle-upon-Tyne. Five projects, shot over weeks in one place.</p>
-  <a href="/projects/" style="display:inline-block;margin-top:var(--space-8);color:var(--color-accent);text-decoration:none;border:1px solid var(--color-accent);border-radius:var(--radius-md);padding:var(--space-4) var(--space-8);font-size:12px;text-transform:uppercase;letter-spacing:0.08em">All projects</a>
-
-  <div class="projects-grid" style="margin-top: calc(var(--space-8) * 4)">
+{% set insetWidths = ["76%", "88%", "70%", "52%"] %}
+<div class="scroller" style="padding: calc(var(--space-8) * 6) calc(var(--space-8) * 2) calc(var(--space-8) * 6)">
+  <div style="max-width: 1400px; margin: 0 auto">
     {% for project in collections.projects %}
-    <a href="/projects/{{ project.fileSlug }}/" style="text-decoration:none;color:var(--color-text)">
-      {% image project.data.cover, "Cover photo for " + project.data.title, null, "cover" %}
-      <div style="display:flex;justify-content:space-between;margin-top:var(--space-4);font-size:12px;opacity:0.6">
-        <span>{{ project.data.title }} — {{ project.data.location }}, {{ project.data.year }}</span>
-        <span>{{ project.data.photos | length }} frames</span>
+      {% if loop.first %}
+      <div data-hero style="display:grid;grid-template-columns:minmax(0,0.85fr) minmax(0,1.15fr);gap:calc(var(--space-8) * 4);align-items:center;margin-bottom:calc(var(--space-8) * 7)">
+        <div>
+          <p style="font-size:clamp(21px,2.2vw,32px);line-height:1.4;max-width:24ch;margin:0;text-wrap:pretty">Documentary work on gatherings — the hours before and after the thing everyone came for.</p>
+          <div style="margin-top:calc(var(--space-8) * 1.5);font-size:13px;opacity:0.6;max-width:34ch;text-wrap:pretty">{{ site.author }} is a photographer based near Newcastle-upon-Tyne. Five projects, shot over weeks in one place.</div>
+          <a href="/projects/" style="display:inline-block;margin-top:calc(var(--space-8) * 1.5);background:transparent;border:1px solid var(--color-accent);border-radius:var(--radius-md);color:var(--color-accent);text-decoration:none;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;padding:var(--space-4) var(--space-8)">All projects</a>
+        </div>
+        <a href="/projects/{{ project.fileSlug }}/" style="cursor:pointer;text-decoration:none;color:var(--color-text)">
+          <div data-hero-image style="width:100%;height:min(660px,calc(100svh - 260px));min-height:320px;position:relative">
+            {% image project.data.cover, "Cover photo for " + project.data.title, null, "full" %}
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:var(--space-4);font-size:12px;opacity:0.55">
+            <span>{{ project.data.title }} — {{ project.data.location }}, {{ project.data.year }}</span><span>{{ project.data.photos | length }} frames</span>
+          </div>
+        </a>
       </div>
-    </a>
+      {% endif %}
     {% endfor %}
+
+    <div style="display:flex;flex-direction:column;gap:calc(var(--space-8) * 7)">
+      {% for project in collections.projects %}
+        {% if not loop.first %}
+        <a data-inset href="/projects/{{ project.fileSlug }}/" style="width:{{ insetWidths[loop.index0 - 1] }};{% if loop.index0 is even %}margin-left:auto;{% endif %}cursor:pointer;text-decoration:none;color:var(--color-text);display:block">
+          {% image project.data.cover, "Cover photo for " + project.data.title, null, "cover" %}
+          <div style="display:flex;justify-content:space-between;margin-top:var(--space-4);font-size:12px;opacity:0.55">
+            <span>{{ project.data.title }} — {{ project.data.location }}, {{ project.data.year }}</span><span>{{ project.data.photos | length }} frames</span>
+          </div>
+        </a>
+        {% endif %}
+      {% endfor %}
+    </div>
   </div>
-</section>
+</div>
