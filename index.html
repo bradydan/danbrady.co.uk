@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="./nocturne.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&display=swap">
+<style>
+  :root{--font-heading:"Figtree",system-ui,sans-serif;--font-body:"Figtree",system-ui,sans-serif;--color-bg:#141416;--color-surface:#1e1e21;--color-text:#e8e6e1;--color-divider:color-mix(in srgb,#e8e6e1 16%,transparent)}
+  html,body{height:100%;margin:0;overflow:hidden;font-family:var(--font-body)}
+  [data-theme="light"]{--color-bg:#e6e0d4;--color-surface:#efeae0;--color-text:#26241f;--color-divider:color-mix(in srgb,#26241f 18%,transparent);--color-accent:#6a5da8}
+  image-slot{--is-bg:color-mix(in srgb,var(--color-text) 6%,transparent)}
+  .scroller{overflow-y:auto;scrollbar-width:none}
+  .scroller::-webkit-scrollbar{display:none}
+  .fade{animation:fade 460ms cubic-bezier(.2,.6,.2,1) both}
+  @keyframes fade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  @media (max-width:900px){
+    [data-nav="desktop"]{display:none !important}
+    [data-nav="burger"]{display:flex !important}
+    [data-split]{grid-template-columns:minmax(0,1fr) !important}
+    [data-sheet]{grid-template-columns:repeat(2,minmax(0,1fr)) !important}
+    [data-index]{grid-template-columns:minmax(0,1fr) !important;height:auto !important;grid-template-rows:44vh auto}
+    [data-index-image]{min-height:44vh}
+    [data-inset]{width:100% !important;margin-left:0 !important}
+    [data-hero]{grid-template-columns:minmax(0,1fr) !important;align-items:start}
+    [data-hero-image]{height:62vh !important}
+  }
+</style>
+<script src="./image-slot.js"></script>
+</helmet>
+
+<div data-theme="{{ theme }}" style="position:fixed;inset:0;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);display:flex;flex-direction:column">
+
+  <header style="position:absolute;top:0;left:0;right:0;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:var(--space-8);padding:calc(var(--space-8) * 1.3) calc(var(--space-8) * 2)">
+    <button onClick="{{ goHome }}" style="display:flex;align-items:baseline;gap:var(--space-3);background:transparent;border:0;padding:0;cursor:pointer;color:var(--color-text);font-family:var(--font-body)" style-hover="opacity:0.7">
+      <span style="width:9px;height:9px;border-radius:50%;background:var(--color-accent);display:block"></span>
+      <span style="font-size:17px;font-weight:500;letter-spacing:-0.01em">Dan Brady</span>
+    </button>
+    <div data-nav="desktop" style="display:flex;align-items:center;gap:calc(var(--space-8) * 1.3);font-size:13px">
+      <button onClick="{{ goProjects }}" style="background:transparent;border:0;padding:0;cursor:pointer;color:var(--color-text);opacity:0.65;font-family:var(--font-body);font-size:13px" style-hover="opacity:1;color:var(--color-accent)">Projects</button>
+      <button onClick="{{ goAbout }}" style="background:transparent;border:0;padding:0;cursor:pointer;color:var(--color-text);opacity:0.65;font-family:var(--font-body);font-size:13px" style-hover="opacity:1;color:var(--color-accent)">About</button>
+      <button onClick="{{ goContact }}" style="background:transparent;border:0;padding:0;cursor:pointer;color:var(--color-text);opacity:0.65;font-family:var(--font-body);font-size:13px" style-hover="opacity:1;color:var(--color-accent)">Contact</button>
+      <button onClick="{{ toggleTheme }}" title="{{ themeLabel }}" style="width:24px;height:24px;border-radius:50%;border:1px solid var(--color-divider);background:var(--color-text);opacity:0.3;cursor:pointer" style-hover="opacity:0.75;border-color:var(--color-accent)"></button>
+    </div>
+    <button data-nav="burger" onClick="{{ openMenu }}" style="display:none;flex-direction:column;justify-content:center;gap:5px;width:44px;height:44px;align-items:flex-end;background:transparent;border:0;cursor:pointer;padding:0">
+      <span style="display:block;width:22px;height:1px;background:var(--color-text)"></span>
+      <span style="display:block;width:14px;height:1px;background:var(--color-text)"></span>
+    </button>
+  </header>
+
+  <!-- ═══ mobile menu ═══ -->
+  <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+    <div class="fade" style="position:absolute;inset:0;z-index:40;background:var(--color-bg);display:flex;flex-direction:column;padding:calc(var(--space-8) * 1.3) calc(var(--space-8) * 2)">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <span style="font-size:17px;font-weight:500">Dan Brady</span>
+        <button onClick="{{ closeMenu }}" style="width:44px;height:44px;background:transparent;border:0;cursor:pointer;color:var(--color-text);font-size:22px;line-height:1">×</button>
+      </div>
+      <div style="margin-top:calc(var(--space-8) * 3);display:flex;flex-direction:column">
+        <button onClick="{{ goProjects }}" style="text-align:left;background:transparent;border:0;border-bottom:1px solid var(--color-divider);padding:var(--space-8) 0;font-family:var(--font-body);font-size:30px;color:var(--color-text);cursor:pointer;min-height:44px" style-hover="color:var(--color-accent)">Projects</button>
+        <button onClick="{{ goAbout }}" style="text-align:left;background:transparent;border:0;border-bottom:1px solid var(--color-divider);padding:var(--space-8) 0;font-family:var(--font-body);font-size:30px;color:var(--color-text);cursor:pointer;min-height:44px" style-hover="color:var(--color-accent)">About</button>
+        <button onClick="{{ goContact }}" style="text-align:left;background:transparent;border:0;border-bottom:1px solid var(--color-divider);padding:var(--space-8) 0;font-family:var(--font-body);font-size:30px;color:var(--color-text);cursor:pointer;min-height:44px" style-hover="color:var(--color-accent)">Contact</button>
+      </div>
+      <div style="margin-top:auto;display:flex;align-items:center;justify-content:space-between;font-size:13px;opacity:0.6">
+        <span>dan@danbrady.photo</span>
+        <button onClick="{{ toggleTheme }}" style="background:transparent;border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:var(--space-3) var(--space-6);color:var(--color-text);font-family:var(--font-body);font-size:12px;cursor:pointer;min-height:44px">{{ themeLabel }}</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ═══ home ═══ -->
+  <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+    <div class="scroller" style="flex:1;padding:calc(var(--space-8) * 6) calc(var(--space-8) * 2) calc(var(--space-8) * 6)">
+      <div style="max-width:1400px;margin:0 auto">
+        <div data-hero style="display:grid;grid-template-columns:minmax(0,0.85fr) minmax(0,1.15fr);gap:calc(var(--space-8) * 4);align-items:center;margin-bottom:calc(var(--space-8) * 7)">
+          <div>
+            <p style="font-size:clamp(21px,2.2vw,32px);line-height:1.4;max-width:24ch;margin:0;text-wrap:pretty">Documentary work on gatherings — the hours before and after the thing everyone came for.</p>
+            <div style="margin-top:calc(var(--space-8) * 1.5);font-size:13px;opacity:0.6;max-width:34ch;text-wrap:pretty">Dan Brady is a photographer based near Newcastle-upon-Tyne. Five projects, shot over weeks in one place.</div>
+            <button onClick="{{ goProjects }}" style="margin-top:calc(var(--space-8) * 1.5);background:transparent;border:1px solid var(--color-accent);border-radius:var(--radius-md);color:var(--color-accent);font-family:var(--font-body);font-size:12px;letter-spacing:0.08em;text-transform:uppercase;padding:var(--space-4) var(--space-8);cursor:pointer;min-height:44px" style-hover="background:color-mix(in srgb, var(--color-accent) 14%, transparent)">All projects</button>
+          </div>
+          <div style="cursor:pointer" onClick="{{ open0 }}">
+            <div data-hero-image style="width:100%;height:min(660px,calc(100svh - 260px));min-height:320px;position:relative"><image-slot id="h0" src="https://picsum.photos/id/1006/1600/1100?grayscale" shape="rect" placeholder="Feast Day — cover"></image-slot></div>
+            <div style="display:flex;justify-content:space-between;margin-top:var(--space-4);font-size:12px;opacity:0.55">
+              <span>Feast Day — Oaxaca, 2022</span><span>32 frames</span>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:calc(var(--space-8) * 7)">
+          <div data-inset style="width:76%;cursor:pointer" onClick="{{ open1 }}">
+            <div style="width:100%;aspect-ratio:4/3;position:relative"><image-slot id="h1" src="https://picsum.photos/id/1011/1200/900?grayscale" shape="rect" placeholder="Night Shift — cover"></image-slot></div>
+            <div style="display:flex;justify-content:space-between;margin-top:var(--space-4);font-size:12px;opacity:0.55">
+              <span>Night Shift — Rotterdam, 2023</span><span>24 frames</span>
+            </div>
+          </div>
+          <div data-inset style="width:88%;margin-left:auto;cursor:pointer" onClick="{{ open2 }}">
+            <div style="width:100%;aspect-ratio:3/2;position:relative"><image-slot id="h2" src="https://picsum.photos/id/1015/1200/800?grayscale" shape="rect" placeholder="The Last Ferry — cover"></image-slot></div>
+            <div style="display:flex;justify-content:space-between;margin-top:var(--space-4);font-size:12px;opacity:0.55">
+              <span>The Last Ferry — Aegean, 2024</span><span>18 frames</span>
+            </div>
+          </div>
+          <div data-inset style="width:70%;cursor:pointer" onClick="{{ open3 }}">
+            <div style="width:100%;aspect-ratio:3/2;position:relative"><image-slot id="h3" src="https://picsum.photos/id/64/1200/800?grayscale" shape="rect" placeholder="Cold Open — cover"></image-slot></div>
+            <div style="display:flex;justify-content:space-between;margin-top:var(--space-4);font-size:12px;opacity:0.55">
+              <span>Cold Open — Reykjavík, 2021</span><span>21 frames</span>
+            </div>
+          </div>
+          <div data-inset style="width:52%;margin-left:auto;cursor:pointer" onClick="{{ open4 }}">
+            <div style="width:100%;aspect-ratio:4/5;position:relative"><image-slot id="h4" src="https://picsum.photos/id/1005/1000/1250?grayscale" shape="rect" placeholder="Union Hall — cover"></image-slot></div>
+            <div style="display:flex;justify-content:space-between;margin-top:var(--space-4);font-size:12px;opacity:0.55">
+              <span>Union Hall — Pittsburgh, 2020</span><span>16 frames</span>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:calc(var(--space-8) * 5);display:flex;align-items:center;justify-content:space-between;gap:var(--space-8);flex-wrap:wrap;font-size:13px;opacity:0.6">
+          <span>Based near Newcastle-upon-Tyne. Editorial and long-form commissions.</span>
+          <button onClick="{{ goProjects }}" style="background:transparent;border:0;padding:0;color:var(--color-accent);font-family:var(--font-body);font-size:13px;cursor:pointer" style-hover="text-decoration:underline">All projects →</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ═══ projects listing ═══ -->
+  <sc-if value="{{ isProjects }}" hint-placeholder-val="{{ false }}">
+    <div style="flex:1;min-height:0;padding:calc(var(--space-8) * 5) calc(var(--space-8) * 2) calc(var(--space-8) * 2)">
+      <div data-index style="height:100%;max-width:1500px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) 440px;gap:calc(var(--space-8) * 3)">
+        <div data-index-image style="position:relative;height:100%;min-height:0">
+          <sc-for list="{{ projects }}" as="p" hint-placeholder-count="5">
+            <div style="position:absolute;inset:0;opacity:{{ p.on }};transition:opacity 420ms cubic-bezier(.2,.6,.2,1)">
+              <image-slot id="{{ p.slot }}" src="{{ p.wide }}" shape="rect" placeholder="{{ p.title }}"></image-slot>
+            </div>
+          </sc-for>
+        </div>
+        <div class="scroller" style="display:flex;flex-direction:column;min-height:0">
+          <h1 style="font-size:clamp(28px,3vw,40px);margin:0 0 calc(var(--space-8) * 2)">Projects</h1>
+          <div style="display:flex;flex-direction:column">
+            <sc-for list="{{ projects }}" as="p" hint-placeholder-count="5">
+              <div onClick="{{ p.open }}" onMouseEnter="{{ p.hover }}" style="padding:var(--space-6) 0;border-bottom:1px solid var(--color-divider);cursor:pointer;transition:opacity 240ms;opacity:{{ p.dim }}">
+                <div style="display:flex;align-items:baseline;justify-content:space-between;gap:var(--space-6)">
+                  <span style="font-size:26px;letter-spacing:-0.015em">{{ p.title }}</span>
+                  <span style="font-size:12px;opacity:0.5;flex-shrink:0">{{ p.meta }}</span>
+                </div>
+                <div style="font-size:12px;opacity:0.5;margin-top:var(--space-1);text-wrap:pretty">{{ p.blurb }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ═══ project detail ═══ -->
+  <sc-if value="{{ isProject }}" hint-placeholder-val="{{ false }}">
+    <div class="scroller" style="flex:1;padding:calc(var(--space-8) * 6) calc(var(--space-8) * 2) calc(var(--space-8) * 6)">
+      <div data-split style="max-width:1400px;margin:0 auto;display:grid;grid-template-columns:320px minmax(0,1fr);gap:calc(var(--space-8) * 3)">
+        <div>
+          <button onClick="{{ goProjects }}" style="background:transparent;border:0;padding:0;color:var(--color-text);opacity:0.5;font-family:var(--font-body);font-size:12px;cursor:pointer" style-hover="opacity:1;color:var(--color-accent)">← Projects</button>
+          <h1 style="font-size:clamp(28px,3vw,40px);margin:var(--space-8) 0 var(--space-3)">{{ pTitle }}</h1>
+          <div style="font-size:13px;opacity:0.5">{{ pMeta }}</div>
+          <p style="font-size:15px;line-height:1.7;opacity:0.75;margin-top:calc(var(--space-8) * 1.5);text-wrap:pretty">{{ pText }}</p>
+          <button onClick="{{ startViewing }}" style="margin-top:calc(var(--space-8) * 1.5);background:transparent;border:1px solid var(--color-accent);border-radius:var(--radius-md);color:var(--color-accent);font-family:var(--font-body);font-size:12px;letter-spacing:0.08em;text-transform:uppercase;padding:var(--space-4) var(--space-8);cursor:pointer;min-height:44px" style-hover="background:color-mix(in srgb, var(--color-accent) 14%, transparent)">Start viewing</button>
+        </div>
+        <div data-sheet style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-6)">
+          <sc-for list="{{ sheet }}" as="f" hint-placeholder-count="6">
+            <div onClick="{{ f.open }}" style="cursor:pointer" style-hover="opacity:0.75">
+              <div style="width:100%;aspect-ratio:3/2;position:relative"><image-slot id="{{ f.slot }}" src="{{ f.src }}" shape="rect" placeholder="{{ f.n }}"></image-slot></div>
+              <div style="margin-top:var(--space-2);font-size:11px;opacity:0.45">{{ f.n }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ═══ viewer ═══ -->
+  <sc-if value="{{ isViewer }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;inset:0;z-index:35;background:var(--color-bg);display:flex;flex-direction:column">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:calc(var(--space-8) * 1.3) calc(var(--space-8) * 2);font-size:12px">
+        <span style="opacity:0.55">{{ pTitle }}</span>
+        <button onClick="{{ closeViewer }}" style="background:transparent;border:0;color:var(--color-text);opacity:0.55;font-family:var(--font-body);font-size:12px;cursor:pointer;min-height:44px" style-hover="opacity:1;color:var(--color-accent)">Close (esc)</button>
+      </div>
+      <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:0 calc(var(--space-8) * 3);min-height:0">
+        <div style="width:min(1040px,100%);height:100%;max-height:100%;position:relative"><image-slot id="{{ vSlot }}" src="{{ vSrc }}" shape="rect" fit="contain" placeholder="frame"></image-slot></div>
+      </div>
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:var(--space-8);padding:var(--space-8) calc(var(--space-8) * 2) calc(var(--space-8) * 1.6)">
+        <div style="max-width:46ch">
+          <sc-if value="{{ showCaptions }}" hint-placeholder-val="{{ true }}">
+            <div style="font-size:14px;line-height:1.6">{{ vCap }}</div>
+            <div style="font-size:12px;opacity:0.45;margin-top:2px">{{ vLoc }}</div>
+          </sc-if>
+        </div>
+        <div style="display:flex;align-items:center;gap:calc(var(--space-8) * 1.2);flex-shrink:0">
+          <span style="font-size:12px;opacity:0.5">{{ vIdx }}</span>
+          <div style="display:flex;gap:var(--space-3)">
+            <button onClick="{{ prev }}" style="width:44px;height:44px;border-radius:var(--radius-md);border:1px solid var(--color-divider);background:transparent;color:var(--color-text);cursor:pointer;font-size:14px;font-family:var(--font-body)" style-hover="border-color:var(--color-accent);color:var(--color-accent)">←</button>
+            <button onClick="{{ next }}" style="width:44px;height:44px;border-radius:var(--radius-md);border:1px solid var(--color-divider);background:transparent;color:var(--color-text);cursor:pointer;font-size:14px;font-family:var(--font-body)" style-hover="border-color:var(--color-accent);color:var(--color-accent)">→</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ═══ about ═══ -->
+  <sc-if value="{{ isAbout }}" hint-placeholder-val="{{ false }}">
+    <div class="scroller" style="flex:1;padding:calc(var(--space-8) * 6) calc(var(--space-8) * 2) calc(var(--space-8) * 6)">
+      <div data-split style="max-width:1200px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:calc(var(--space-8) * 4)">
+        <div>
+          <h1 style="font-size:clamp(30px,3.4vw,44px);margin:0 0 calc(var(--space-8) * 2)">About</h1>
+          <p style="font-size:19px;line-height:1.6;max-width:56ch;text-wrap:pretty">Dan Brady is a documentary photographer based near Newcastle-upon-Tyne. He works on gatherings — festivals, night shifts, crossings, union halls — and photographs the hours that surround them rather than the event itself.</p>
+          <p style="font-size:15px;line-height:1.75;opacity:0.75;max-width:60ch;margin-top:var(--space-8);text-wrap:pretty">He studied at Northumbria University in the 1990s and worked for years as a freelance photographer before turning to long-form projects — each shot over weeks in one place and edited down to a sequence of no more than thirty-two frames. Assignments have taken him to Oaxaca, Rotterdam, Reykjavík and the eastern Aegean.</p>
+          <div style="margin-top:calc(var(--space-8) * 2.5);display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:var(--space-8);font-size:13px">
+            <div>
+              <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;opacity:0.45;margin-bottom:var(--space-3)">Selected clients</div>
+              <div style="opacity:0.75;line-height:1.8">De Kade<br>Aperture Weekly<br>Nordur Journal</div>
+            </div>
+            <div>
+              <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;opacity:0.45;margin-bottom:var(--space-3)">Exhibitions</div>
+              <div style="opacity:0.75;line-height:1.8">Feast Day, Newcastle 2023<br>Night Shift, Rotterdam 2024<br>Group show, Reykjavík 2022</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div style="width:100%;aspect-ratio:4/5;position:relative"><image-slot id="about-portrait" src="https://picsum.photos/id/669/900/1125?grayscale" shape="rect" placeholder="portrait"></image-slot></div>
+          <div style="margin-top:var(--space-4);font-size:11px;opacity:0.45">Newcastle-upon-Tyne, 2025</div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ═══ contact ═══ -->
+  <sc-if value="{{ isContact }}" hint-placeholder-val="{{ false }}">
+    <div class="scroller" style="flex:1;padding:calc(var(--space-8) * 6) calc(var(--space-8) * 2) calc(var(--space-8) * 6)">
+      <div data-split style="max-width:1200px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:calc(var(--space-8) * 4)">
+        <div>
+          <h1 style="font-size:clamp(30px,3.4vw,44px);margin:0 0 calc(var(--space-8) * 2)">Contact</h1>
+          <p style="font-size:19px;line-height:1.6;max-width:44ch;text-wrap:pretty">Commissions, print sales and archive requests. I reply to everything within a week.</p>
+          <div style="margin-top:calc(var(--space-8) * 2.5);display:flex;flex-direction:column;gap:var(--space-8);font-size:15px">
+            <div>
+              <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;opacity:0.45;margin-bottom:var(--space-2)">Email</div>
+              <a href="#contact" style="color:var(--color-accent);text-decoration:none" style-hover="text-decoration:underline">dan@danbrady.photo</a>
+            </div>
+            <div>
+              <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;opacity:0.45;margin-bottom:var(--space-2)">Based</div>
+              <div style="opacity:0.8">Near Newcastle-upon-Tyne, UK<br>Working across the North East and further afield</div>
+            </div>
+            <div>
+              <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;opacity:0.45;margin-bottom:var(--space-2)">Previously</div>
+              <div style="opacity:0.8">Freelance photographer<br>Northumbria University, 1990s</div>
+            </div>
+            <div>
+              <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;opacity:0.45;margin-bottom:var(--space-2)">Elsewhere</div>
+              <div style="display:flex;gap:var(--space-8);opacity:0.8">
+                <a href="#contact" style="color:var(--color-accent);text-decoration:none" style-hover="text-decoration:underline">Instagram</a>
+                <a href="#contact" style="color:var(--color-accent);text-decoration:none" style-hover="text-decoration:underline">Newsletter</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div style="width:100%;aspect-ratio:3/4;position:relative"><image-slot id="contact-img" src="https://picsum.photos/id/838/900/1200?grayscale" shape="rect" placeholder="studio"></image-slot></div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#9184d9&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#9184d9&quot;,&quot;#c2b8a3&quot;,&quot;#7f9a8b&quot;,&quot;#b98a6a&quot;],&quot;section&quot;:&quot;Theme&quot;},&quot;defaultTheme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;dark&quot;,&quot;light&quot;],&quot;default&quot;:&quot;dark&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Theme&quot;},&quot;showCaptions&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Viewer&quot;}}">
+const PROJECTS = [
+  { title: "Feast Day", place: "Oaxaca", year: 2022, count: 32, cover: 1006,
+    blurb: "Three weeks in a valley town where the preparation outlasts the feast",
+    text: "Three weeks in a valley town where the preparation outlasts the feast. Shot on the mornings nobody photographs.",
+    ids: [1074, 1027, 177, 349, 550, 669, 838, 1084, 91],
+    caps: ["The kitchen at four, before anyone else is up.", "Chairs carried two at a time across the square.", "Waiting out the heat under the awning.", "Someone's grandmother, keeping count of the plates.", "The band arrives an hour early and sits down.", "Trestles going up in the churchyard.", "First plates out, nobody seated yet.", "The square at midnight, swept.", "Leftovers packed for the walk home."] },
+  { title: "Night Shift", place: "Rotterdam", year: 2023, count: 24, cover: 1011,
+    blurb: "Eleven nights with the crews who load while the city sleeps",
+    text: "The port does not stop, so neither did the work. Eleven nights with the crews who load while the city sleeps — and the hour at the end of a shift when everyone stands still.",
+    ids: [1062, 1071, 1076, 1083, 1043, 1080],
+    caps: ["Crane operator, twenty minutes into the shift.", "The yard lights make their own weather.", "Break room, 3:40am. Nobody speaks for a while.", "Containers stacked five high, waiting.", "Handover at first light.", "Walking out through the gate."] },
+  { title: "The Last Ferry", place: "Aegean", year: 2024, count: 18, cover: 1015,
+    blurb: "A summer route that closes in October, on its final four crossings",
+    text: "A summer route that closes in October. Photographed on the last four crossings of the season.",
+    ids: [1002, 1036, 1039, 1044, 1050, 342],
+    caps: ["Loading ramp, the last crossing of the season.", "Two passengers and a dog on the upper deck.", "Deck at dusk, the second crossing.", "The wake, looking back at the harbour.", "Ticket office, shuttered for winter.", "Ropes coiled, engine off."] },
+  { title: "Cold Open", place: "Reykjavík", year: 2021, count: 21, cover: 64,
+    blurb: "A theatre company's first week back, rehearsing in the dark months",
+    text: "A theatre company's first week back after eighteen months closed. Rehearsals ran from four in the afternoon until the light had long gone.",
+    ids: [219, 823, 1005, 1012, 1024, 1033],
+    caps: ["Read-through, coats still on.", "Marking the blocking with tape.", "The lighting desk, mid-note.", "Someone learning lines in the corridor.", "House lights up on an empty room.", "Curtain call rehearsed twice."] },
+  { title: "Union Hall", place: "Pittsburgh", year: 2020, count: 16, cover: 1005,
+    blurb: "Four monthly meetings in a room that has held them since 1948",
+    text: "Four monthly meetings in a hall that has held them since 1948. The vote takes ten minutes; the room takes all evening.",
+    ids: [1060, 1069, 1073, 1077, 1081, 445],
+    caps: ["Chairs set out an hour early.", "Coffee urn, refilled twice.", "The floor, on the second motion.", "Show of hands.", "Notices left on the board.", "Last one out turns the lights off."] }
+];
+const src = (id, w, h) => "https://picsum.photos/id/" + id + "/" + w + "/" + h + "?grayscale";
+
+class Component extends DCLogic {
+  state = { theme: null, route: "home", menu: false, proj: 0, frame: 0, hover: 0 };
+
+  componentDidUpdate() { this.applyAccent(); }
+  applyAccent() {
+    const a = this.props.accent;
+    if (a) document.documentElement.style.setProperty("--color-accent", a);
+  }
+
+  componentDidMount() {
+    this.applyAccent();
+    this._key = e => {
+      if (this.state.route !== "viewer") return;
+      if (e.key === "Escape") this.setState({ route: "project" });
+      if (e.key === "ArrowRight" || e.key === " ") this.move(1);
+      if (e.key === "ArrowLeft") this.move(-1);
+    };
+    window.addEventListener("keydown", this._key);
+  }
+  componentWillUnmount() { window.removeEventListener("keydown", this._key); }
+
+  move(dir) {
+    const len = PROJECTS[this.state.proj].ids.length;
+    this.setState(s => ({ frame: (s.frame + dir + len) % len }));
+  }
+  go(route) { this.setState({ route, menu: false }); }
+  openProject(i) { this.setState({ route: "project", proj: i, frame: 0, menu: false }); }
+
+  renderVals() {
+    const { route, menu, proj, frame } = this.state;
+    const theme = this.state.theme ?? (this.props.defaultTheme ?? "dark");
+    const p = PROJECTS[proj];
+    const pad = n => String(n + 1).padStart(2, "0");
+    return {
+      theme,
+      showCaptions: this.props.showCaptions ?? true,
+      themeLabel: theme === "dark" ? "Light mode" : "Dark mode",
+      toggleTheme: () => this.setState(s => ({ theme: s.theme === "dark" ? "light" : "dark" })),
+      menuOpen: menu,
+      openMenu: () => this.setState({ menu: true }),
+      closeMenu: () => this.setState({ menu: false }),
+
+      isHome: route === "home", isProjects: route === "projects", isProject: route === "project",
+      isViewer: route === "viewer", isAbout: route === "about", isContact: route === "contact",
+      goHome: () => this.go("home"), goProjects: () => this.go("projects"),
+      goAbout: () => this.go("about"), goContact: () => this.go("contact"),
+      open0: () => this.openProject(0), open1: () => this.openProject(1), open2: () => this.openProject(2),
+      open3: () => this.openProject(3), open4: () => this.openProject(4),
+
+      projects: PROJECTS.map((q, i) => ({
+        title: q.title, blurb: q.blurb, meta: q.place + ", " + q.year + " · " + q.count + " frames",
+        wide: src(q.cover, 1400, 1000), slot: "list-" + i,
+        on: i === this.state.hover ? 1 : 0,
+        dim: i === this.state.hover ? 1 : 0.55,
+        hover: () => this.setState({ hover: i }),
+        open: () => this.openProject(i)
+      })),
+
+      pTitle: p.title,
+      pMeta: p.place + ", " + p.year + " · " + p.count + " frames",
+      pText: p.text,
+      startViewing: () => this.setState({ route: "viewer", frame: 0 }),
+      sheet: p.ids.map((id, i) => ({
+        slot: "sheet-" + proj + "-" + i, src: src(id, 600, 400), n: pad(i),
+        open: () => this.setState({ route: "viewer", frame: i })
+      })),
+
+      vSlot: "view-" + proj + "-" + frame,
+      vSrc: src(p.ids[frame], 1400, 1000),
+      vCap: p.caps[frame],
+      vLoc: p.title + " · " + p.place + ", " + p.year,
+      vIdx: pad(frame) + " / " + String(p.count).padStart(2, "0"),
+      prev: () => this.move(-1),
+      next: () => this.move(1),
+      closeViewer: () => this.setState({ route: "project" })
+    };
+  }
+}
+
+</script>
+</body>
+</html>
