@@ -57,8 +57,19 @@ fill. Never hand-write one: use the macro.
 
 `src` is relative to `src/images/`. `alt` is **required — the shortcode
 throws and fails the build without it**; that is intentional, do not soften
-it. `caption` may be null. `preset` is `"cover"` or `"full"`. Pass
-`eager: true` only for above-the-fold LCP images (home hero, photo page).
+it. `caption` may be null. Pass `eager: true` only for above-the-fold LCP
+images (home hero, photo page).
+
+`preset` selects the `sizes` attribute, and **there is one preset per layout
+context**, because `sizes` has to describe the width the image actually
+renders at: `"cover"` (projects grid), `"hero"` (home hero), `"gallery"`
+(project gallery), `"full"` (per-photo page), and the `inset76/88/70/52`
+family for the home insets — picked by position via the `insetPreset` filter,
+never named directly. Over-declaring makes browsers fetch a file larger than
+they can show; under-declaring makes the photograph look soft. **If you change
+a layout width in `style.css`, change the matching preset in `lib/photo.js`.**
+Presets sharing a `widths` array share the files on disk, so varying only
+`sizes` costs nothing at build time.
 
 **Never reconstruct eleventy-img output filenames by string manipulation.**
 A source narrower than a configured width has no file at that width, because
@@ -66,7 +77,11 @@ eleventy-img does not upscale — so guessing `-1600w.jpeg` breaks on smaller
 photos. Use the `photoUrl` filter or `largestJpegUrl()` from `lib/photo.js`,
 which read eleventy-img's own `statsSync` metadata. `lib/photo.js` is the
 single source of the image options shared by the shortcode and those
-lookups; if they diverge, generated URLs stop matching files on disk.
+lookups; if they diverge, generated URLs stop matching files on disk. The
+lightbox builds its `<img>` in JS and so cannot use the shortcode — it is fed
+generated URLs by the `lightboxPhotos` filter. It must never be pointed back
+at `src/images/`; those originals are deliberately **not** copied to the
+output, and doing so would ship unresized multi-megabyte files.
 
 **The email address is obfuscated and must stay that way.** `_data/site.js`
 defines `CONTACT_EMAIL` and exposes **only** `social.emailEncoded` (a
@@ -118,6 +133,24 @@ per-photograph `<image:image>` entries, which the plugin could not do.
 `collections.all`** — paginated pages are not reliably in `collections.all`
 when the sitemap renders, and switching that loop back will silently emit
 only the first paginated page.
+
+**Fonts are self-hosted.** Figtree lives in `src/fonts/` and is declared in
+the Fonts section of `style.css`. It is a variable font, so one file per
+unicode-range serves every weight (400–600). Do not reintroduce the Google
+Fonts `<link>`: a third-party stylesheet is render-blocking and was the only
+external request on the site. `base.njk` preloads the latin file because the
+browser would otherwise not discover it until the stylesheet is parsed.
+
+**Images are emitted as AVIF, WebP and JPEG,** in that order, so browsers take
+the smallest they support. JPEG stays last and is what `photoUrl` returns for
+`og:image` and the sitemap, since crawlers and social unfurlers are least
+likely to decode AVIF.
+
+**Every page emits an `og:image`.** `partials/seo.njk` resolves it in order:
+the frame itself on photo pages, the project `cover` on project pages, then a
+site-wide fallback (the `order: 0` cover). Values interpolated into JSON-LD go
+through `| dump | safe`, never bare `"{{ ... }}"` — a caption containing a
+quote would otherwise emit invalid JSON.
 
 **Client JS** is vanilla, no framework, and each script no-ops harmlessly on
 pages without its markup: `js/site.js` (mobile menu, theme toggle),

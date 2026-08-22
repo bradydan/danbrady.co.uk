@@ -200,6 +200,7 @@ src/
   projects/                one markdown file per project
   images/                  one folder of photographs per project
   css/style.css            all styling; no inline styles anywhere
+  fonts/                   self-hosted Figtree (variable, one file per range)
   js/                      mobile menu, theme toggle, lightbox
   photo.njk                generates a page per photograph
   sitemap.njk              sitemap, including per-photograph image entries

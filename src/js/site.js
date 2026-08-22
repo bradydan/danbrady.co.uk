@@ -3,6 +3,13 @@
   var openBtn = document.querySelector("[data-menu-open]");
   var closeBtn = document.querySelector("[data-menu-close]");
   var themeToggle = document.querySelector("[data-theme-toggle]");
+  var themeColor = document.querySelector('meta[name="theme-color"]');
+
+  // Keep the browser chrome in step with the theme. Values mirror --color-bg
+  // for each theme in style.css.
+  function syncThemeColor(theme) {
+    if (themeColor) themeColor.setAttribute("content", theme === "light" ? "#e6e0d4" : "#141416");
+  }
 
   function openMenu() {
     menu.classList.add("is-open");
@@ -21,6 +28,7 @@
       var html = document.documentElement;
       var current = html.getAttribute("data-theme") === "light" ? "dark" : "light";
       html.setAttribute("data-theme", current);
+      syncThemeColor(current);
       try {
         localStorage.setItem("theme", current);
       } catch (e) {}
@@ -31,4 +39,5 @@
     var saved = localStorage.getItem("theme");
     if (saved) document.documentElement.setAttribute("data-theme", saved);
   } catch (e) {}
+  syncThemeColor(document.documentElement.getAttribute("data-theme"));
 })();

@@ -11,7 +11,7 @@ layout: layouts/base.njk
     {# A real link, so each frame is shareable and works without JS; the
        lightbox intercepts the click when JS is available. #}
     <a class="gallery-item" href="/projects/{{ page.fileSlug }}/{{ photo.src | photoSlug }}/" data-lightbox-open data-index="{{ loop.index0 }}">
-      {% image photo.src, photo.alt, photo.caption, "full" %}
+      {% image photo.src, photo.alt, photo.caption, "gallery" %}
     </a>
     {% endfor %}
   </div>
@@ -27,5 +27,5 @@ layout: layouts/base.njk
 </section>
 
 <script type="application/json" data-lightbox-data>
-{{ photos | dump | safe }}
+{{ photos | lightboxPhotos | dump | safe }}
 </script>
