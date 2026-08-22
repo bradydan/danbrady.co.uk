@@ -88,14 +88,46 @@ cover: feast-day/cover.jpg
 description: Documentary work on a saint's day feast, shot over two weeks.
 photos:
   - src: feast-day/01.jpg
-    alt: Placeholder — replace with real caption
+    alt: Woman carrying a paper lantern through the plaza at dusk
+    caption: Plaza, dusk
   - src: feast-day/02.jpg
-    alt: Placeholder — replace with real caption
+    alt: Two men resetting fireworks scaffolding after the display
+    caption:
 ---
 ```
 
 `photos` drives both the project gallery grid and the full-screen viewer.
-`order` controls home page and project-index ordering (ascending).
+`order` controls home page and project-index ordering (ascending). Every
+photo requires `alt` (accessibility description, always present). `caption`
+is optional short visible text shown under the photo in the gallery/viewer
+— omit or leave blank when there's nothing worth captioning.
+
+## Responsive design & mobile menu
+
+The site must work well from small phones through desktop, matching the
+`dc-runtime` prototype's existing breakpoint behavior (`@media
+(max-width:900px)` in `nocturne.css`): desktop nav collapses to a burger
+button opening a full-screen mobile menu (project/about/contact links,
+theme toggle), the hero/index grids collapse to single-column, and image
+areas resize proportionally. This is implemented with plain CSS media
+queries and a small vanilla-JS toggle (no framework) — no fixed-width
+layouts anywhere.
+
+## Per-photograph SEO discoverability
+
+Beyond page-level SEO, individual photographs should be discoverable:
+
+- Each photo in a project's JSON-LD `ImageGallery` is emitted as a full
+  `Photograph`/`ImageObject` entry (`contentUrl`, `caption`/`description`
+  from `alt`+`caption`, `creator: "Dan Brady"`), not just a `<img>` tag —
+  this is what lets image search / rich results index individual photos
+  rather than only the page.
+- Each generated `<img>` always has a real, specific `alt` (never empty or
+  generic "photo"), since that's both an accessibility requirement and a
+  primary signal for Google Image Search.
+- The `eleventy-img` output includes `width`/`height` and descriptive
+  filenames (kept from the source `src` path) rather than opaque hashes
+  where practical, since descriptive URLs are a (minor) image-SEO signal.
 
 ## Image pipeline
 
