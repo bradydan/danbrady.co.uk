@@ -1,1 +1,50 @@
-<title>{{ title or site.title }}</title>
+{% set pageTitle = title or site.title %}
+{% set pageDescription = description or site.description %}
+{% set canonicalUrl = site.url + page.url %}
+<title>{{ pageTitle }}{% if title %} — {{ site.author }}{% endif %}</title>
+<meta name="description" content="{{ pageDescription }}">
+<link rel="canonical" href="{{ canonicalUrl }}">
+
+<meta property="og:type" content="{% if photos %}article{% else %}website{% endif %}">
+<meta property="og:title" content="{{ pageTitle }}">
+<meta property="og:description" content="{{ pageDescription }}">
+<meta property="og:url" content="{{ canonicalUrl }}">
+{% if ogImage %}<meta property="og:image" content="{{ site.url }}{{ ogImage }}">{% endif %}
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ pageTitle }}">
+<meta name="twitter:description" content="{{ pageDescription }}">
+
+{% if isAbout %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "{{ site.author }}",
+  "url": "{{ site.url }}",
+  "jobTitle": "Documentary Photographer"
+}
+</script>
+{% endif %}
+
+{% if photos %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ImageGallery",
+  "name": "{{ pageTitle }}",
+  "description": "{{ pageDescription }}",
+  "url": "{{ canonicalUrl }}",
+  "image": [
+    {% for photo in photos %}
+    {
+      "@type": "ImageObject",
+      "contentUrl": "{{ site.url }}/img/{{ photo.src | replace('/', '-') | replace('.jpg', '') }}-1600w.jpeg",
+      "description": "{{ photo.caption or photo.alt }}",
+      "creator": "{{ site.author }}"
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
+</script>
+{% endif %}
