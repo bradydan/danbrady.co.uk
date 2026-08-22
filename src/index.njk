@@ -16,7 +16,7 @@ description: Documentary photography by Dan Brady — five projects shot over we
         </div>
         <a href="/projects/{{ project.fileSlug }}/" style="cursor:pointer;text-decoration:none;color:var(--color-text)">
           <div data-hero-image style="width:100%;height:min(660px,calc(100svh - 260px));min-height:320px;position:relative">
-            {% image project.data.cover, "Cover photo for " + project.data.title, null, "full" %}
+            {% image project.data.cover, "Cover photo for " + project.data.title, null, "full", true %}
           </div>
           <div style="display:flex;justify-content:space-between;margin-top:var(--space-4);font-size:12px;opacity:0.55">
             <span>{{ project.data.title }} — {{ project.data.location }}, {{ project.data.year }}</span><span>{{ project.data.photos | length }} frames</span>

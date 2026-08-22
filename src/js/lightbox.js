@@ -28,16 +28,50 @@
     }
   }
 
+  var lastFocused = null;
+  var closeBtn = document.querySelector("[data-lightbox-close]");
+
+  function focusable() {
+    return lightbox.querySelectorAll("a[href], button");
+  }
+
   function open(index) {
+    lastFocused = document.activeElement;
     render(index);
     lightbox.hidden = false;
     lightbox.style.display = "flex";
+    document.body.style.overflow = "hidden";
+    if (closeBtn) closeBtn.focus();
   }
 
   function close() {
     lightbox.hidden = true;
     lightbox.style.display = "none";
+    document.body.style.overflow = "";
+    if (lastFocused && lastFocused.focus) {
+      lastFocused.focus();
+    }
   }
+
+  // Keep Tab inside the dialog while it is open.
+  function trapTab(e) {
+    var items = focusable();
+    if (!items.length) return;
+    var first = items[0];
+    var last = items[items.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  }
+
+  // Clicking the backdrop (but not the image or controls) closes.
+  lightbox.addEventListener("click", function (e) {
+    if (e.target === lightbox) close();
+  });
 
   // Each trigger is a real link to the photo's own page. Intercept plain
   // left-clicks to show the lightbox instead, but leave modified clicks
@@ -52,7 +86,7 @@
     });
   });
 
-  document.querySelector("[data-lightbox-close]").addEventListener("click", close);
+  closeBtn.addEventListener("click", close);
   document.querySelector("[data-lightbox-prev]").addEventListener("click", function () {
     render(currentIndex - 1);
   });
@@ -65,5 +99,6 @@
     if (e.key === "Escape") close();
     if (e.key === "ArrowLeft") render(currentIndex - 1);
     if (e.key === "ArrowRight") render(currentIndex + 1);
+    if (e.key === "Tab") trapTab(e);
   });
 })();

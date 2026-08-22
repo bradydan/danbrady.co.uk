@@ -22,7 +22,9 @@ eleventyComputed:
     <span>Frame {{ photo.position }} of {{ photo.total }}</span>
   </nav>
 
-  {% image photo.src, photo.alt, null, "full" %}
+  <div class="photo-frame">
+    {% image photo.src, photo.alt, null, "full", true %}
+  </div>
 
   <div style="margin-top:calc(var(--space-8) * 1.5);display:flex;flex-wrap:wrap;gap:var(--space-8);justify-content:space-between;align-items:baseline">
     <div>

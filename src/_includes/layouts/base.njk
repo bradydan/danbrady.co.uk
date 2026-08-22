@@ -3,17 +3,24 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+{# Applied before first paint so a saved light theme does not flash dark. #}
+<script>
+(function(){try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();
+</script>
 {% include "partials/seo.njk" %}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="/css/style.css">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to content</a>
 {% include "partials/nav.njk" %}
-<main>
+<main id="main">
 {{ content | safe }}
 </main>
+{% include "partials/footer.njk" %}
 <script src="/js/site.js" defer></script>
 <script src="/js/lightbox.js" defer></script>
 </body>
