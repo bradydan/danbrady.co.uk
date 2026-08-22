@@ -19,7 +19,7 @@ jobs:
       - run: npm run build
 
       - name: Deploy to Bunny Storage
-        uses: ayeressian/bunnycdn-storage-deploy@v2.3.0
+        uses: ayeressian/bunnycdn-storage-deploy@74f4ef4922470087621a4d134f7960b74492e8fc # v2.3.0
         with:
           source: "_site"
           destination: ""
