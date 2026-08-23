@@ -47,7 +47,7 @@ replaced failed at 3.28:1 and 4.27:1. Anything placed *on* the accent uses
 `.skip-link`).
 
 **`src/favicon.svg` is the wordmark's "D" as an outline, not text.** It is the
-Figtree glyph at weight 500 to match `.brand`, converted to a `<path>` so it
+Figtree glyph at weight 400 to match `.brand`, converted to a `<path>` so it
 renders identically everywhere — an SVG favicon cannot rely on a webfont
 loading. Regenerate it from `src/fonts/figtree-latin.woff2` rather than
 editing the path by hand.
