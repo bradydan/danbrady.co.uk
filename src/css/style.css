@@ -37,7 +37,10 @@
   --color-bg: #141416;
   --color-surface: #1e1e21;
   --color-text: #e8e6e1;
-  --color-accent: #6a5da8;
+  /* Warm coral. The accent is one hue across both themes but two
+     lightnesses: a coral this light cannot clear 4.5:1 against the cream
+     light-theme background, so the light theme deepens it below. */
+  --color-accent: #c8836a;
   --color-divider: color-mix(in srgb, #e8e6e1 16%, transparent);
 
   --space-3: 6px;
@@ -72,7 +75,8 @@
   --color-surface: #efeae0;
   --color-text: #26241f;
   --color-divider: color-mix(in srgb, #26241f 18%, transparent);
-  --color-accent: #6a5da8;
+  /* Same hue as the dark theme's coral, deepened to clear 4.5:1 on cream. */
+  --color-accent: #a8432c;
 }
 
 /* ============================================================
@@ -247,7 +251,7 @@ figcaption {
   top: 0;
   z-index: 100;
   background: var(--color-accent);
-  color: #fff;
+  color: var(--color-bg);
   padding: var(--space-4) var(--space-8);
   border-radius: 0 0 var(--radius-md) 0;
   text-decoration: none;
@@ -288,10 +292,13 @@ figcaption {
 
 .brand {
   text-decoration: none;
+  /* Same muted treatment as the nav links beside it. */
   color: var(--color-text);
-  font-size: 20px;
+  opacity: 0.65;
+  font-size: 18px;
   font-weight: 500;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .nav-desktop {

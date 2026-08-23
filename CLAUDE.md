@@ -35,6 +35,23 @@ Add a class rather than a style attribute.
 for spacing, `--text-*` for type sizes, `--color-*` for colour, `--measure`
 for line length. If a value needs a new step in a scale, add a token.
 
+**`--color-accent` is one hue at two lightnesses, and both must be set.** The
+dark theme uses a coral (`#c8836a`); the light theme deepens it to
+`#a8432c`, because no coral light enough to read as coral clears 4.5:1
+against the cream light-theme background. Change one and you must change the
+other. The accent is body-sized link text (`.link-accent`, `.button` at 13px)
+and a focus ring, so it needs 4.5:1 against **both** `--color-bg` and
+`--color-surface` in its own theme — check before changing it; the purple this
+replaced failed at 3.28:1 and 4.27:1. Anything placed *on* the accent uses
+`var(--color-bg)`, not a literal `#fff`, so it follows the theme (see
+`.skip-link`).
+
+**`src/favicon.svg` is the wordmark's "D" as an outline, not text.** It is the
+Figtree glyph at weight 500 to match `.brand`, converted to a `<path>` so it
+renders identically everywhere — an SVG favicon cannot rely on a webfont
+loading. Regenerate it from `src/fonts/figtree-latin.woff2` rather than
+editing the path by hand.
+
 **Type scale.** Body text and the hero subtitle are 16px/1.5. Captions are
 15px. Meta rows under cover images are 14px. All `<h1>` use `.page-title`
 (34px) — the home page has no `<h1>`. Small uppercase letterspaced text is
@@ -157,8 +174,7 @@ they cannot drift apart:
   `["ImageObject", "Photograph"]` — Google's image-licensing documentation
   requires `ImageObject`, and dropping it loses the Licensable badge in Google
   Images. The `license` and `acquireLicensePage` values must be **absolute**
-  URLs. `/licensing/` is the page the licence links point at; its terms are
-  placeholder wording awaiting review.
+  URLs. `/licensing/` is the page the licence links point at.
 
 Three traps, all verified rather than assumed:
 

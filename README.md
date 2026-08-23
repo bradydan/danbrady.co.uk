@@ -212,8 +212,7 @@ Every generated photograph carries an embedded copyright notice crediting you
 and linking back to the site, and each one is published with licensing
 metadata so Google Images can show a "Licensable" badge linking to
 `/licensing/`. The wording for both lives in one place, `licensing` in
-`src/_data/site.js`. **The terms on the licensing page are placeholder text
-and need reviewing before the site goes live.** Note that changing the
+`src/_data/site.js`. Note that changing the
 copyright wording does not rebuild images that already exist — delete `_site/`
 and build again.
 
