@@ -198,13 +198,24 @@ src/
     macros/ui.njk          the underlined-link-with-chevron button
     shortcodes/image.js    the {% image %} responsive-image shortcode
   projects/                one markdown file per project
+  licensing.njk            copyright terms; linked from the footer
   images/                  one folder of photographs per project
   css/style.css            all styling; no inline styles anywhere
+  fonts/                   self-hosted Figtree (variable, one file per range)
   js/                      mobile menu, theme toggle, lightbox
   photo.njk                generates a page per photograph
   sitemap.njk              sitemap, including per-photograph image entries
 lib/photo.js               shared image config and URL helpers
 ```
+
+Every generated photograph carries an embedded copyright notice crediting you
+and linking back to the site, and each one is published with licensing
+metadata so Google Images can show a "Licensable" badge linking to
+`/licensing/`. The wording for both lives in one place, `licensing` in
+`src/_data/site.js`. **The terms on the licensing page are placeholder text
+and need reviewing before the site goes live.** Note that changing the
+copyright wording does not rebuild images that already exist — delete `_site/`
+and build again.
 
 The email address is obfuscated: `src/_data/site.js` exposes only a
 character-shifted encoding, and a small inline script in the base layout

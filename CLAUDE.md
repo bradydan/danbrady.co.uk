@@ -57,8 +57,19 @@ fill. Never hand-write one: use the macro.
 
 `src` is relative to `src/images/`. `alt` is **required — the shortcode
 throws and fails the build without it**; that is intentional, do not soften
-it. `caption` may be null. `preset` is `"cover"` or `"full"`. Pass
-`eager: true` only for above-the-fold LCP images (home hero, photo page).
+it. `caption` may be null. Pass `eager: true` only for above-the-fold LCP
+images (home hero, photo page).
+
+`preset` selects the `sizes` attribute, and **there is one preset per layout
+context**, because `sizes` has to describe the width the image actually
+renders at: `"cover"` (projects grid), `"hero"` (home hero), `"gallery"`
+(project gallery), `"full"` (per-photo page), and the `inset76/88/70/52`
+family for the home insets — picked by position via the `insetPreset` filter,
+never named directly. Over-declaring makes browsers fetch a file larger than
+they can show; under-declaring makes the photograph look soft. **If you change
+a layout width in `style.css`, change the matching preset in `lib/photo.js`.**
+Presets sharing a `widths` array share the files on disk, so varying only
+`sizes` costs nothing at build time.
 
 **Never reconstruct eleventy-img output filenames by string manipulation.**
 A source narrower than a configured width has no file at that width, because
@@ -66,7 +77,11 @@ eleventy-img does not upscale — so guessing `-1600w.jpeg` breaks on smaller
 photos. Use the `photoUrl` filter or `largestJpegUrl()` from `lib/photo.js`,
 which read eleventy-img's own `statsSync` metadata. `lib/photo.js` is the
 single source of the image options shared by the shortcode and those
-lookups; if they diverge, generated URLs stop matching files on disk.
+lookups; if they diverge, generated URLs stop matching files on disk. The
+lightbox builds its `<img>` in JS and so cannot use the shortcode — it is fed
+generated URLs by the `lightboxPhotos` filter. It must never be pointed back
+at `src/images/`; those originals are deliberately **not** copied to the
+output, and doing so would ship unresized multi-megabyte files.
 
 **The email address is obfuscated and must stay that way.** `_data/site.js`
 defines `CONTACT_EMAIL` and exposes **only** `social.emailEncoded` (a
@@ -118,6 +133,58 @@ per-photograph `<image:image>` entries, which the plugin could not do.
 `collections.all`** — paginated pages are not reliably in `collections.all`
 when the sitemap renders, and switching that loop back will silently emit
 only the first paginated page.
+
+**Fonts are self-hosted.** Figtree lives in `src/fonts/` and is declared in
+the Fonts section of `style.css`. It is a variable font, so one file per
+unicode-range serves every weight (400–600). Do not reintroduce the Google
+Fonts `<link>`: a third-party stylesheet is render-blocking and was the only
+external request on the site. `base.njk` preloads the latin file because the
+browser would otherwise not discover it until the stylesheet is parsed.
+
+**Photographs carry copyright metadata and licensing markup.** Two halves of
+one thing, and both read their strings from `licensing` in `_data/site.js` so
+they cannot drift apart:
+
+- *In the files.* A `formatHooks` hook in `lib/photo.js` embeds EXIF
+  `Copyright`, `Artist` and `ImageDescription`, each linking back to the site,
+  so attribution survives a download. A format hook is the only place
+  eleventy-img exposes the sharp instance, and **a hook takes over encoding**
+  — it must call `.toFormat()` and return a Buffer itself. Supplying
+  `formatHooks` also replaces eleventy-img's default object, which holds its
+  built-in SVG hook (harmless here; no SVG goes through the shortcode).
+- *In the markup.* `partials/seo.njk` emits `license`, `acquireLicensePage`,
+  `creditText` and `copyrightNotice` on every image. Photo pages are typed
+  `["ImageObject", "Photograph"]` — Google's image-licensing documentation
+  requires `ImageObject`, and dropping it loses the Licensable badge in Google
+  Images. The `license` and `acquireLicensePage` values must be **absolute**
+  URLs. `/licensing/` is the page the licence links point at; its terms are
+  placeholder wording awaiting review.
+
+Three traps, all verified rather than assumed:
+
+1. **eleventy-img's disk cache is a bare `fs.existsSync` on the output path,**
+   and `formatHooks` is not part of its options hash (only the five
+   `sharp*Options` objects are). With this project's hash-free
+   `filenameFormat`, **changing the EXIF strings does not regenerate images
+   that already exist** — move `_site/img` aside and rebuild, or you will
+   verify against stale files.
+2. **libvips stores EXIF as `value (type info)` and strips the trailing
+   parenthetical on write, so a `(` in a value silently truncates it.** Never
+   put parentheses in an EXIF string; the URL after one disappears with no
+   error.
+3. **EXIF strings are 7-bit ASCII** — sharp transliterates, turning `©` into
+   `(C)` and an em dash into `--`. Keep the punctuation plain.
+
+**Images are emitted as AVIF, WebP and JPEG,** in that order, so browsers take
+the smallest they support. JPEG stays last and is what `photoUrl` returns for
+`og:image` and the sitemap, since crawlers and social unfurlers are least
+likely to decode AVIF.
+
+**Every page emits an `og:image`.** `partials/seo.njk` resolves it in order:
+the frame itself on photo pages, the project `cover` on project pages, then a
+site-wide fallback (the `order: 0` cover). Values interpolated into JSON-LD go
+through `| dump | safe`, never bare `"{{ ... }}"` — a caption containing a
+quote would otherwise emit invalid JSON.
 
 **Client JS** is vanilla, no framework, and each script no-ops harmlessly on
 pages without its markup: `js/site.js` (mobile menu, theme toggle),

@@ -1,6 +1,5 @@
 ---
 layout: layouts/base.njk
-title: Home
 description: Documentary photography by Dan Brady — five projects shot over weeks in one place.
 ---
 {% from "macros/ui.njk" import linkButton %}
@@ -16,7 +15,7 @@ description: Documentary photography by Dan Brady — five projects shot over we
         </div>
         <a class="card" href="/projects/{{ project.fileSlug }}/">
           <div class="home-hero-image">
-            {% image project.data.cover, "Cover photo for " + project.data.title, null, "full", true %}
+            {% image project.data.cover, "Cover photo for " + project.data.title, null, "hero", true %}
           </div>
           <div class="meta-row">
             <span>{{ project.data.title }} — {{ project.data.location }}, {{ project.data.year }}</span>
@@ -31,7 +30,7 @@ description: Documentary photography by Dan Brady — five projects shot over we
       {% for project in collections.projects %}
         {% if not loop.first %}
         <a class="card home-inset" href="/projects/{{ project.fileSlug }}/">
-          {% image project.data.cover, "Cover photo for " + project.data.title, null, "cover" %}
+          {% image project.data.cover, "Cover photo for " + project.data.title, null, loop.index0 | insetPreset %}
           <div class="meta-row">
             <span>{{ project.data.title }} — {{ project.data.location }}, {{ project.data.year }}</span>
             <span>{{ project.data.photos | length }} frames</span>

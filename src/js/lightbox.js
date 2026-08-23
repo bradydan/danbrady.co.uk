@@ -15,13 +15,32 @@
     currentIndex = (index + photos.length) % photos.length;
     var photo = photos[currentIndex];
     content.textContent = "";
+    // photo.src/srcset are the generated, resized files (see the
+    // lightboxPhotos filter) — never the unprocessed original.
     var img = document.createElement("img");
-    img.src = "/images/" + photo.src;
+    img.className = "lightbox-image";
+    img.src = photo.src;
+    if (photo.srcset) {
+      img.srcset = photo.srcset;
+      img.sizes = "90vw";
+    }
+    if (photo.width) img.width = photo.width;
+    if (photo.height) img.height = photo.height;
     img.alt = photo.alt;
-    img.style.maxWidth = "90vw";
-    img.style.maxHeight = "80vh";
-    img.style.display = "block";
+    img.decoding = "async";
     content.appendChild(img);
+
+    // Warm the neighbouring frames so arrow-key paging feels instant.
+    [currentIndex - 1, currentIndex + 1].forEach(function (i) {
+      var neighbour = photos[(i + photos.length) % photos.length];
+      if (!neighbour || neighbour === photo) return;
+      var pre = new Image();
+      if (neighbour.srcset) {
+        pre.sizes = "90vw";
+        pre.srcset = neighbour.srcset;
+      }
+      pre.src = neighbour.src;
+    });
     captionEl.textContent = photo.caption || "";
     if (permalinkEl && triggers[currentIndex]) {
       permalinkEl.href = triggers[currentIndex].getAttribute("href");

@@ -1,29 +1,79 @@
 {% set pageTitle = title or site.title %}
 {% set pageDescription = description or site.description %}
 {% set canonicalUrl = site.url + page.url %}
+{%- set licenseUrl = site.url + site.licensing.licensePath %}
+{%- set acquireUrl = site.url + site.licensing.acquireLicensePath %}
+{#- Every page needs a share image. Photo pages use their own frame, project
+    pages their cover, and everything else falls back to the site-wide default
+    (the order: 0 project cover) so links never unfurl bare. -#}
+{% if isPhoto %}
+  {% set shareImage = site.url + (photo.src | photoUrl) %}
+  {% set shareImageAlt = photo.alt %}
+{% elif cover %}
+  {% set shareImage = site.url + (cover | photoUrl) %}
+  {% set shareImageAlt = "Cover photograph for " + title %}
+{% elif ogImage %}
+  {% set shareImage = site.url + ogImage %}
+  {% set shareImageAlt = pageTitle %}
+{% else %}
+  {% set shareImage = site.url + (collections.projects[0].data.cover | photoUrl) %}
+  {% set shareImageAlt = "Photograph by " + site.author %}
+{% endif %}
 <title>{{ pageTitle }}{% if title %} — {{ site.author }}{% endif %}</title>
 <meta name="description" content="{{ pageDescription }}">
+<meta name="author" content="{{ site.author }}">
 <link rel="canonical" href="{{ canonicalUrl }}">
+{% if noindex %}<meta name="robots" content="noindex, follow">{% endif %}
+{# Not keyed to prefers-color-scheme: the site opens dark for everyone and
+   only the toggle changes that, so site.js keeps this in step. #}
+<meta name="theme-color" content="#141416">
 
 <meta property="og:type" content="{% if photos or isPhoto %}article{% else %}website{% endif %}">
+<meta property="og:site_name" content="{{ site.title }}">
+<meta property="og:locale" content="en_GB">
 <meta property="og:title" content="{{ pageTitle }}">
 <meta property="og:description" content="{{ pageDescription }}">
 <meta property="og:url" content="{{ canonicalUrl }}">
-{% if isPhoto %}<meta property="og:image" content="{{ site.url }}{{ photo.src | photoUrl }}">
-{% elif ogImage %}<meta property="og:image" content="{{ site.url }}{{ ogImage }}">{% endif %}
+<meta property="og:image" content="{{ shareImage }}">
+<meta property="og:image:alt" content="{{ shareImageAlt }}">
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{{ pageTitle }}">
 <meta name="twitter:description" content="{{ pageDescription }}">
+<meta name="twitter:image" content="{{ shareImage }}">
+<meta name="twitter:image:alt" content="{{ shareImageAlt }}">
+
+{% if page.url == "/" %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": {{ site.title | dump | safe }},
+  "url": "{{ site.url }}",
+  "description": {{ site.description | dump | safe }},
+  "author": {
+    "@type": "Person",
+    "name": {{ site.author | dump | safe }},
+    "url": "{{ site.url }}/about/"
+  }
+}
+</script>
+{% endif %}
 
 {% if isAbout %}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Person",
-  "name": "{{ site.author }}",
+  "name": {{ site.author | dump | safe }},
   "url": "{{ site.url }}",
-  "jobTitle": "Documentary Photographer"
+  "jobTitle": "Documentary Photographer",
+  "image": "{{ shareImage }}",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Newcastle-upon-Tyne",
+    "addressCountry": "GB"
+  }
 }
 </script>
 {% endif %}
@@ -32,11 +82,16 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "Photograph",
+  "@type": ["ImageObject", "Photograph"],
   "name": {{ (photo.caption or photo.alt) | dump | safe }},
   "description": {{ photo.alt | dump | safe }},
   "url": "{{ canonicalUrl }}",
   "contentUrl": "{{ site.url }}{{ photo.src | photoUrl }}",
+  "license": "{{ licenseUrl }}",
+  "acquireLicensePage": "{{ acquireUrl }}",
+  "creditText": {{ site.licensing.creditText | dump | safe }},
+  "copyrightNotice": {{ site.licensing.copyrightNotice | dump | safe }},
+  "copyrightYear": {{ photo.year | dump | safe }},
   "creator": {
     "@type": "Person",
     "name": {{ site.author | dump | safe }},
@@ -57,6 +112,17 @@
   }
 }
 </script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Projects", "item": "{{ site.url }}/projects/" },
+    { "@type": "ListItem", "position": 2, "name": {{ photo.projectTitle | dump | safe }}, "item": "{{ site.url }}{{ photo.projectUrl }}" },
+    { "@type": "ListItem", "position": 3, "name": {{ ("Frame " + photo.position) | dump | safe }}, "item": "{{ canonicalUrl }}" }
+  ]
+}
+</script>
 {% endif %}
 
 {% if photos %}
@@ -64,18 +130,36 @@
 {
   "@context": "https://schema.org",
   "@type": "ImageGallery",
-  "name": "{{ pageTitle }}",
-  "description": "{{ pageDescription }}",
+  "name": {{ pageTitle | dump | safe }},
+  "description": {{ pageDescription | dump | safe }},
   "url": "{{ canonicalUrl }}",
   "image": [
     {% for photo in photos %}
     {
       "@type": "ImageObject",
       "contentUrl": "{{ site.url }}{{ photo.src | photoUrl }}",
-      "description": "{{ photo.caption or photo.alt }}",
-      "creator": "{{ site.author }}"
+      "description": {{ (photo.caption or photo.alt) | dump | safe }},
+      "license": "{{ licenseUrl }}",
+      "acquireLicensePage": "{{ acquireUrl }}",
+      "creditText": {{ site.licensing.creditText | dump | safe }},
+      "copyrightNotice": {{ site.licensing.copyrightNotice | dump | safe }},
+      "creator": {
+        "@type": "Person",
+        "name": {{ site.author | dump | safe }},
+        "url": "{{ site.url }}"
+      }
     }{% if not loop.last %},{% endif %}
     {% endfor %}
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Projects", "item": "{{ site.url }}/projects/" },
+    { "@type": "ListItem", "position": 2, "name": {{ title | dump | safe }}, "item": "{{ canonicalUrl }}" }
   ]
 }
 </script>
