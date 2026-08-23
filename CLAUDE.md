@@ -141,6 +141,40 @@ Fonts `<link>`: a third-party stylesheet is render-blocking and was the only
 external request on the site. `base.njk` preloads the latin file because the
 browser would otherwise not discover it until the stylesheet is parsed.
 
+**Photographs carry copyright metadata and licensing markup.** Two halves of
+one thing, and both read their strings from `licensing` in `_data/site.js` so
+they cannot drift apart:
+
+- *In the files.* A `formatHooks` hook in `lib/photo.js` embeds EXIF
+  `Copyright`, `Artist` and `ImageDescription`, each linking back to the site,
+  so attribution survives a download. A format hook is the only place
+  eleventy-img exposes the sharp instance, and **a hook takes over encoding**
+  — it must call `.toFormat()` and return a Buffer itself. Supplying
+  `formatHooks` also replaces eleventy-img's default object, which holds its
+  built-in SVG hook (harmless here; no SVG goes through the shortcode).
+- *In the markup.* `partials/seo.njk` emits `license`, `acquireLicensePage`,
+  `creditText` and `copyrightNotice` on every image. Photo pages are typed
+  `["ImageObject", "Photograph"]` — Google's image-licensing documentation
+  requires `ImageObject`, and dropping it loses the Licensable badge in Google
+  Images. The `license` and `acquireLicensePage` values must be **absolute**
+  URLs. `/licensing/` is the page the licence links point at; its terms are
+  placeholder wording awaiting review.
+
+Three traps, all verified rather than assumed:
+
+1. **eleventy-img's disk cache is a bare `fs.existsSync` on the output path,**
+   and `formatHooks` is not part of its options hash (only the five
+   `sharp*Options` objects are). With this project's hash-free
+   `filenameFormat`, **changing the EXIF strings does not regenerate images
+   that already exist** — move `_site/img` aside and rebuild, or you will
+   verify against stale files.
+2. **libvips stores EXIF as `value (type info)` and strips the trailing
+   parenthetical on write, so a `(` in a value silently truncates it.** Never
+   put parentheses in an EXIF string; the URL after one disappears with no
+   error.
+3. **EXIF strings are 7-bit ASCII** — sharp transliterates, turning `©` into
+   `(C)` and an em dash into `--`. Keep the punctuation plain.
+
 **Images are emitted as AVIF, WebP and JPEG,** in that order, so browsers take
 the smallest they support. JPEG stays last and is what `photoUrl` returns for
 `og:image` and the sitemap, since crawlers and social unfurlers are least

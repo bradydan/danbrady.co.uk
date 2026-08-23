@@ -1,6 +1,8 @@
 {% set pageTitle = title or site.title %}
 {% set pageDescription = description or site.description %}
 {% set canonicalUrl = site.url + page.url %}
+{%- set licenseUrl = site.url + site.licensing.licensePath %}
+{%- set acquireUrl = site.url + site.licensing.acquireLicensePath %}
 {#- Every page needs a share image. Photo pages use their own frame, project
     pages their cover, and everything else falls back to the site-wide default
     (the order: 0 project cover) so links never unfurl bare. -#}
@@ -80,11 +82,16 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "Photograph",
+  "@type": ["ImageObject", "Photograph"],
   "name": {{ (photo.caption or photo.alt) | dump | safe }},
   "description": {{ photo.alt | dump | safe }},
   "url": "{{ canonicalUrl }}",
   "contentUrl": "{{ site.url }}{{ photo.src | photoUrl }}",
+  "license": "{{ licenseUrl }}",
+  "acquireLicensePage": "{{ acquireUrl }}",
+  "creditText": {{ site.licensing.creditText | dump | safe }},
+  "copyrightNotice": {{ site.licensing.copyrightNotice | dump | safe }},
+  "copyrightYear": {{ photo.year | dump | safe }},
   "creator": {
     "@type": "Person",
     "name": {{ site.author | dump | safe }},
@@ -132,7 +139,15 @@
       "@type": "ImageObject",
       "contentUrl": "{{ site.url }}{{ photo.src | photoUrl }}",
       "description": {{ (photo.caption or photo.alt) | dump | safe }},
-      "creator": {{ site.author | dump | safe }}
+      "license": "{{ licenseUrl }}",
+      "acquireLicensePage": "{{ acquireUrl }}",
+      "creditText": {{ site.licensing.creditText | dump | safe }},
+      "copyrightNotice": {{ site.licensing.copyrightNotice | dump | safe }},
+      "creator": {
+        "@type": "Person",
+        "name": {{ site.author | dump | safe }},
+        "url": "{{ site.url }}"
+      }
     }{% if not loop.last %},{% endif %}
     {% endfor %}
   ]
