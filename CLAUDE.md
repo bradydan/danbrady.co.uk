@@ -18,11 +18,15 @@ is written for the site's owner and covers content management (adding
 projects, photos, captions) — read it before changing anything about how
 content is authored, since it documents the contract users rely on.
 
-The repo root also contains `index.html`, `nocturne.css`, `image-slot.js` and
-`support.js`. These are a **Claude Design canvas prototype** (`dc-runtime`
-format: `x-dc`, `sc-if`, `{{ }}` compiled to React in-browser). They are the
-original visual reference **only** — not runnable production markup, not part
-of the build, and their templating syntax must never be reused in `src/`.
+The repo root once held a **Claude Design canvas prototype** — `index.html`
+plus `nocturne.css`, `image-slot.js` and `support.js`, in `dc-runtime` format
+(`x-dc`, `sc-if`, `{{ }}` compiled to React in-browser). It was the original
+visual reference only and never part of the build. All four have been deleted
+now that the real site has moved past them; they survive in git history, and
+`docs/superpowers/` records the design intent. Older notes in there still
+refer to `nocturne.css` as though it were present — that is a historical
+record, not a live reference. Never reintroduce that templating syntax into
+`src/`.
 
 ## Established conventions — follow these
 
