@@ -170,6 +170,19 @@ figcaption {
   margin-top: var(--space-16);
 }
 
+/* Inline links in body copy. Nothing styled these before, so a link written
+   in Markdown fell back to the browser's default blue. Underline comes from
+   the UA; this matches the offset used by .button-label. */
+.prose a {
+  color: var(--color-accent);
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
+}
+
+.prose a:hover {
+  text-decoration-thickness: 2px;
+}
+
 .lede {
   opacity: 0.85;
 }

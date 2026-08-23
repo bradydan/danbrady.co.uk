@@ -1,6 +1,5 @@
 ---
 layout: layouts/base.njk
-description: Documentary photography by Dan Brady — five projects shot over weeks in one place.
 ---
 {% from "macros/ui.njk" import linkButton %}
 <div class="home">
@@ -9,8 +8,8 @@ description: Documentary photography by Dan Brady — five projects shot over we
       {% if loop.first %}
       <div class="home-hero">
         <div>
-          <p class="home-hero-statement">Documentary work on gatherings — the hours before and after the thing everyone came for.</p>
-          <p class="home-hero-subtitle">{{ site.author }} is a photographer based near Newcastle-upon-Tyne. Five projects, shot over weeks in one place.</p>
+          <p class="home-hero-statement">I used to make photographs</p>
+          <p class="home-hero-subtitle">Occasionally, I still do.</p>
           {{ linkButton("/projects/", "All projects", "home-hero-cta") }}
         </div>
         <a class="card" href="/projects/{{ project.fileSlug }}/">

@@ -67,12 +67,18 @@
   "@type": "Person",
   "name": {{ site.author | dump | safe }},
   "url": "{{ site.url }}",
-  "jobTitle": "Documentary Photographer",
+  "jobTitle": {{ site.person.jobTitle | dump | safe }},
   "image": "{{ shareImage }}",
+  "worksFor": {
+    "@type": "Organization",
+    "name": {{ site.person.worksFor | dump | safe }},
+    "url": {{ site.person.worksForUrl | dump | safe }}
+  },
   "address": {
     "@type": "PostalAddress",
-    "addressLocality": "Newcastle-upon-Tyne",
-    "addressCountry": "GB"
+    "addressLocality": {{ site.person.locality | dump | safe }},
+    "addressRegion": {{ site.person.region | dump | safe }},
+    "addressCountry": {{ site.person.country | dump | safe }}
   }
 }
 </script>
