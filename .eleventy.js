@@ -1,5 +1,5 @@
 const imageShortcode = require("./src/_includes/shortcodes/image.js");
-const { largestJpegUrl, responsiveSources, INSET_PRESETS } = require("./lib/photo.js");
+const { largestJpegUrl, responsiveSources } = require("./lib/photo.js");
 const path = require("path");
 
 /** Filename-derived slug for a photo, e.g. "feast-day/photo-01.jpg" -> "photo-01". */
@@ -11,14 +11,6 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addNunjucksAsyncShortcode("image", imageShortcode);
   eleventyConfig.addFilter("photoUrl", (src) => largestJpegUrl(src));
   eleventyConfig.addFilter("photoSlug", photoSlug);
-
-  // Home insets cycle through four CSS widths, so each needs the matching
-  // `sizes`. Keeping the mapping in lib/photo.js keeps layout widths out of
-  // the template. `position` is 1-based, as nth-child is.
-  eleventyConfig.addFilter(
-    "insetPreset",
-    (position) => INSET_PRESETS[(position - 1) % INSET_PRESETS.length],
-  );
 
   // The lightbox builds its <img> in JS, so it cannot use the image
   // shortcode. This hands it the same generated, responsive files the rest

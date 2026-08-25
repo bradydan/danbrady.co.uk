@@ -23,12 +23,21 @@
   if (openBtn) openBtn.addEventListener("click", openMenu);
   if (closeBtn) closeBtn.addEventListener("click", closeMenu);
 
+  // The switch reports its own state. `aria-checked` drives the knob position
+  // in the stylesheet too, so there is one fact to keep right, not two.
+  function syncThemeToggle(theme) {
+    if (!themeToggle) return;
+    themeToggle.setAttribute("aria-checked", theme === "light" ? "false" : "true");
+    themeToggle.setAttribute("aria-label", theme === "light" ? "Light theme" : "Dark theme");
+  }
+
   if (themeToggle) {
     themeToggle.addEventListener("click", function () {
       var html = document.documentElement;
       var current = html.getAttribute("data-theme") === "light" ? "dark" : "light";
       html.setAttribute("data-theme", current);
       syncThemeColor(current);
+      syncThemeToggle(current);
       try {
         localStorage.setItem("theme", current);
       } catch (e) {}
@@ -39,5 +48,9 @@
     var saved = localStorage.getItem("theme");
     if (saved) document.documentElement.setAttribute("data-theme", saved);
   } catch (e) {}
-  syncThemeColor(document.documentElement.getAttribute("data-theme"));
+  var theme = document.documentElement.getAttribute("data-theme");
+  syncThemeColor(theme);
+  // The markup ships checked because the document defaults to dark; correct it
+  // here in case the blocking script in base.njk restored a saved light theme.
+  syncThemeToggle(theme);
 })();

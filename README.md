@@ -134,19 +134,56 @@ writing: they're what makes each photograph's page worth finding.
 
 ## Editing the home page hero
 
-The hero shows **whichever project has `order: 0`** — to feature different
-work, change the `order` values so the project you want is `0`.
+The hero is one large photograph in the middle of the page that slowly cycles
+through a set you choose by hand, with the caption changing underneath it. It
+is not tied to the projects list, so you can open with any frames you like, in
+any order.
 
-The two lines of text beside it are in `src/index.njk`:
+The set lives in the front matter of `src/index.njk`, under `hero:`:
 
-```njk
-<p class="home-hero-statement">Documentary work on gatherings — …</p>
-<p class="home-hero-subtitle">Dan Brady is a photographer based near …</p>
+```yaml
+hero:
+  - src: night-shift/photo-01.jpg
+    alt: A crane gantry lit from below against a black sky
+    caption: Gantry crane, 2am — Night Shift, Rotterdam
+    href: /projects/night-shift/
 ```
 
-Below the hero, the remaining projects alternate in width down the page. That
-rhythm is automatic — add as many projects as you like and the pattern
-repeats.
+- **`src`** — the photograph, written the same way as anywhere else on the
+  site: the folder name, a slash, then the filename.
+- **`alt`** — required. The build fails without it. See *Captions and alt
+  text* above.
+- **`caption`** — the line shown under the photograph while that frame is up.
+- **`href`** — optional. Where clicking the photograph goes. Leave it out and
+  it goes to the projects index.
+
+Add or remove entries freely; one entry is fine and the hero simply holds
+still. The frames change every five seconds and pause while the pointer is
+over them, so a visitor can stop on one and look at it.
+
+The lines of text below the photograph are in the body of `src/index.njk`:
+
+```njk
+<p class="home-hero-statement">I used to make photographs</p>
+<p class="home-hero-subtitle">Occasionally, I still do.</p>
+```
+
+**The header disappears on the home page.** This is deliberate: the page
+opens on the photograph alone, and the name and menu stay out of the way for
+the first three seconds and any time the cursor is sitting still. Moving the
+mouse — or pressing Tab, or scrolling — brings them back. On phones and
+tablets, where there is no cursor to go still, the header behaves normally
+and is always there. So does it for anyone browsing with JavaScript turned
+off.
+
+**The photograph and its caption always fill the screen exactly**, whatever
+size the window is, so the writing below is never half-visible on arrival.
+You do not have to do anything to keep that true — but it does mean a very
+tall window crops the photograph tall, and a very wide one crops it wide.
+
+Below the hero come the two lines of writing, then every project listed in
+order: a picture with its title and details beside it. Add projects and the
+list simply grows.
 
 ## About, contact and email
 

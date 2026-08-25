@@ -7,6 +7,16 @@
 <script>
 (function(){try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();
 </script>
+{% if autoHideChrome %}
+{# Blocking, for the same reason as the theme script above: adding this after
+   first paint would flash the header before hiding it. Because JS adds the
+   class, a visitor without JS simply gets a normal, always-visible header.
+   The breakpoint mirrors the one in style.css — there is no cursor to go
+   still on a touch layout, so the header never auto-hides there. #}
+<script>
+(function(){var h=document.documentElement;h.classList.add("chrome-auto");if(!window.matchMedia("(max-width: 900px)").matches)h.classList.add("chrome-hidden");})();
+</script>
+{% endif %}
 {% include "partials/seo.njk" %}
 {# Figtree is self-hosted (see the Fonts section of style.css). Preloaded
    because the browser would otherwise only discover it after parsing the
@@ -39,5 +49,6 @@
 </script>
 <script src="/js/site.js" defer></script>
 <script src="/js/lightbox.js" defer></script>
+<script src="/js/home.js" defer></script>
 </body>
 </html>

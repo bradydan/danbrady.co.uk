@@ -1,42 +1,78 @@
 ---
 layout: layouts/base.njk
+autoHideChrome: true
+# The home hero is a hand-picked sequence, not a projects list, so the
+# opening frames can be chosen for how they sit next to each other. Each
+# entry needs `src` (relative to src/images/), `alt` and `caption`; `href`
+# is optional and defaults to the projects index.
+hero:
+  - src: night-shift/photo-01.jpg
+    alt: Placeholder photograph 1 for the Night Shift project
+    caption: Gantry crane, 2am — Night Shift, Rotterdam
+    href: /projects/night-shift/
+  - src: feast-day/photo-05.jpg
+    alt: Placeholder photograph 5 for the Feast Day project
+    caption: Procession route, side street — Feast Day, Oaxaca
+    href: /projects/feast-day/
+  - src: last-ferry/photo-05.jpg
+    alt: Placeholder photograph 5 for the Last Ferry project
+    caption: Empty car deck — The Last Ferry, Isle of Wight
+    href: /projects/last-ferry/
+  - src: quiet-hours/photo-03.jpg
+    alt: Placeholder photograph 3 for the Quiet Hours project
+    caption: Bakery, 3am prep — Quiet Hours, Newcastle-upon-Tyne
+    href: /projects/quiet-hours/
+  - src: harvest-week/photo-01.jpg
+    alt: Placeholder photograph 1 for the Harvest Week project
+    caption: First light, orchard rows — Harvest Week, Kent
+    href: /projects/harvest-week/
 ---
 {% from "macros/ui.njk" import linkButton %}
 <div class="home">
   <div class="home-inner">
-    {% for project in collections.projects %}
-      {% if loop.first %}
-      <div class="home-hero">
-        <div>
-          <p class="home-hero-statement">I used to make photographs</p>
-          <p class="home-hero-subtitle">Occasionally, I still do.</p>
-          {{ linkButton("/projects/", "All projects", "home-hero-cta") }}
+    <section class="home-hero">
+      {# Everything inside this wrapper is sized to fill exactly one viewport,
+         so the statement below it always begins past the fold. #}
+      <div class="home-hero-viewport">
+        <div class="home-hero-stage" data-hero>
+          {% for slide in hero %}
+          <a class="home-hero-slide{% if loop.first %} is-active{% endif %}"
+             href="{{ slide.href | default('/projects/') }}"
+             data-hero-slide
+             data-caption="{{ slide.caption }}">
+            {% image slide.src, slide.alt, null, "hero", loop.first %}
+          </a>
+          {% endfor %}
         </div>
-        <a class="card" href="/projects/{{ project.fileSlug }}/">
-          <div class="home-hero-image">
-            {% image project.data.cover, "Cover photo for " + project.data.title, null, "hero", true %}
-          </div>
-          <div class="meta-row">
-            <span>{{ project.data.title }} — {{ project.data.location }}, {{ project.data.year }}</span>
-            <span>{{ project.data.photos | length }} frames</span>
-          </div>
-        </a>
+        {# Rendered server-side for the first frame, then swapped by home.js.
+           Deliberately not an aria-live region: an auto-advancing caption
+           would interrupt a screen reader every few seconds. #}
+        <p class="home-hero-caption" data-hero-caption>{{ hero[0].caption }}</p>
       </div>
-      {% endif %}
-    {% endfor %}
+      <div class="home-hero-intro">
+        <p class="home-hero-statement">I used to make photographs</p>
+        <p class="home-hero-subtitle">Occasionally, I still do.</p>
+        {{ linkButton("/projects/", "All projects", "home-hero-cta") }}
+      </div>
+    </section>
 
-    <div class="home-insets">
+    {# Every project, including the one the hero opens on: the hero is a
+       hand-picked sequence now, not a stand-in for the first project, so
+       skipping it here would leave it unlisted. #}
+    <ul class="project-list">
       {% for project in collections.projects %}
-        {% if not loop.first %}
-        <a class="card home-inset" href="/projects/{{ project.fileSlug }}/">
-          {% image project.data.cover, "Cover photo for " + project.data.title, null, loop.index0 | insetPreset %}
-          <div class="meta-row">
-            <span>{{ project.data.title }} — {{ project.data.location }}, {{ project.data.year }}</span>
-            <span>{{ project.data.photos | length }} frames</span>
+      <li>
+        <a class="project-list-item" href="/projects/{{ project.fileSlug }}/">
+          <div class="project-list-thumb">
+            {% image project.data.cover, "Cover photo for " + project.data.title, null, "thumb" %}
+          </div>
+          <div class="project-list-text">
+            <span class="project-list-title">{{ project.data.title }}</span>
+            <span class="project-list-meta">{{ project.data.location }}, {{ project.data.year }} — {{ project.data.photos | length }} frames</span>
           </div>
         </a>
-        {% endif %}
+      </li>
       {% endfor %}
-    </div>
+    </ul>
   </div>
 </div>

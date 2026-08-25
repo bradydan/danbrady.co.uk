@@ -83,10 +83,10 @@ images (home hero, photo page).
 
 `preset` selects the `sizes` attribute, and **there is one preset per layout
 context**, because `sizes` has to describe the width the image actually
-renders at: `"cover"` (projects grid), `"hero"` (home hero), `"gallery"`
-(project gallery), `"full"` (per-photo page), and the `inset76/88/70/52`
-family for the home insets — picked by position via the `insetPreset` filter,
-never named directly. Over-declaring makes browsers fetch a file larger than
+renders at: `"cover"` (projects grid), `"hero"` (home hero), `"thumb"` (home
+project list), `"gallery"` (project gallery) and `"full"` (per-photo page).
+The `inset76/88/70/52` family and the `insetPreset` filter were removed with
+the home insets they described — do not reintroduce them. Over-declaring makes browsers fetch a file larger than
 they can show; under-declaring makes the photograph look soft. **If you change
 a layout width in `style.css`, change the matching preset in `lib/photo.js`.**
 Presets sharing a `widths` array share the files on disk, so varying only
@@ -209,9 +209,49 @@ quote would otherwise emit invalid JSON.
 **Client JS** is vanilla, no framework, and each script no-ops harmlessly on
 pages without its markup: `js/site.js` (mobile menu, theme toggle),
 `js/lightbox.js` (gallery viewer, reads photo data from an inline
-`application/json` block rendered by `layouts/project.njk`). The theme is
-applied by a **blocking** inline script in `<head>` — deferring it causes a
-flash of the wrong theme on every navigation.
+`application/json` block rendered by `layouts/project.njk`), `js/home.js`
+(hero carousel, auto-hiding chrome). The theme is applied by a **blocking**
+inline script in `<head>` — deferring it causes a flash of the wrong theme on
+every navigation.
+
+**The home hero is a hand-picked `hero:` list in `src/index.njk`'s front
+matter**, not a projects collection — entries are `{src, alt, caption, href}`.
+Every frame is rendered by the `{% image %}` shortcode at build time and
+absolutely stacked in `.home-hero-stage`; JS only toggles `.is-active`. Never
+build a slide's URL in JS, for the same reason the lightbox is fed by a
+filter. Only the first frame is `eager`. The home page still has **no `<h1>`**
+— `.home-hero-statement` sits under the photograph, and it is a `<p>`.
+
+**The home hero is sized to guarantee the fold falls below the caption.**
+`.home-hero-viewport` is `calc(100svh - var(--header-height) - var(--space-24))`
+— one viewport minus everything above the photograph — with the stage taking
+whatever the caption leaves. Three things this depends on: `--header-height`
+is a token *and* `.site-header` is given that height, so the subtraction
+cannot drift; the unit is `svh` (`vh`/`lvh` would let the statement show
+through on a phone); and `.home`'s top padding is the `--space-24` term. Change
+any of those together. Verified across 14 window sizes down to 320x568.
+
+**The header auto-hides on pages that set `autoHideChrome: true`.** The state
+is a class on `<html>`, added by a **blocking** script in `base.njk` for the
+same anti-flash reason as the theme. Three things about it are load-bearing:
+
+- Because *JS* adds the class, a visitor without JS gets a normal header. Do
+  not invert this by hiding in CSS and revealing in JS.
+- Hidden is `opacity: 0` + `pointer-events: none` — never `display: none` or
+  `inert`. Tab must still reach the nav, and
+  `.chrome-hidden .site-header:focus-within` is the CSS-only guarantee of that
+  if scripts fail to load. `js/home.js` also wakes on `keydown`/`focusin`, and
+  refuses to hide while the header holds focus.
+- There is no cursor to go still below 900px, so the header never auto-hides
+  there. The breakpoint is duplicated in the blocking script and `style.css`;
+  they must agree.
+
+**The theme control is a `role="switch"`, and `aria-checked` is its only
+state.** The knob position is styled from `[aria-checked="false"]`, so the
+visual and what a screen reader announces cannot disagree. It ships
+`aria-checked="true"` because the document defaults to dark; `site.js`
+corrects it on load in case the blocking script restored a saved light theme.
+Do not add a parallel `is-*` class for this.
 
 **Deploy.** `.github/workflows/deploy.yml` builds on push to `main` and syncs
 `_site/` to Bunny Storage via a SHA-pinned third-party action. Requires

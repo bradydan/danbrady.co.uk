@@ -6,7 +6,14 @@
     <a href="/projects/">Projects</a>
     <a href="/about/">About</a>
     <a href="/contact/">Contact</a>
-    <button type="button" class="theme-toggle" data-theme-toggle aria-label="Toggle dark/light theme"></button>
+    {# A switch, not a plain button: it has an on/off state, so it reports one.
+       `aria-checked` is the single source of truth — the knob position is
+       styled from it, so the two cannot drift. site.js syncs it on load,
+       after the blocking theme script in base.njk has settled the theme. #}
+    <button type="button" class="theme-toggle" data-theme-toggle
+            role="switch" aria-checked="true" aria-label="Dark theme">
+      <span class="theme-toggle-knob"></span>
+    </button>
   </nav>
   <button type="button" class="nav-burger" data-menu-open aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
     <span></span><span></span>

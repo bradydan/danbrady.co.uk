@@ -56,6 +56,10 @@
 
   --radius-md: 8px;
 
+  /* The header's own height, declared rather than left to its contents,
+     because the home hero subtracts it to fill exactly one viewport. */
+  --header-height: 76px;
+
   /* Type scale */
   --text-display: clamp(21px, 2.2vw, 32px);
   --text-page-title: 34px;
@@ -299,8 +303,32 @@ figcaption {
   align-items: center;
   justify-content: space-between;
   gap: var(--space-8);
-  padding: var(--space-12) var(--space-16);
+  height: var(--header-height);
+  padding: 0 var(--space-16);
   background: var(--color-bg);
+}
+
+/* Auto-hiding chrome. Pages opt in by setting `autoHideChrome`, which makes
+   base.njk add `chrome-auto` (and, above the mobile breakpoint, `chrome-hidden`)
+   in a blocking script so the header never flashes before it is hidden. The
+   header keeps its box either way, so revealing it shifts nothing.
+
+   Hidden means faded and unclickable, never `display: none` or `inert`: Tab
+   must still reach the nav. The `:focus-within` rule below is the CSS-only
+   safety net for that, so keyboard access does not depend on site scripts
+   having loaded. */
+.chrome-auto .site-header {
+  transition: opacity 1s ease;
+}
+
+.chrome-hidden .site-header {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.chrome-hidden .site-header:focus-within {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .brand {
@@ -333,21 +361,42 @@ figcaption {
   color: var(--color-accent);
 }
 
+/* A track-and-knob switch. State is read from `aria-checked` rather than a
+   class, so the visual and the thing a screen reader announces are the same
+   fact: checked means the dark theme, and the knob sits left. */
 .theme-toggle {
-  width: 24px;
-  height: 24px;
-  padding: 0;
-  border-radius: 50%;
+  flex: none;
+  display: flex;
+  align-items: center;
+  width: 40px;
+  height: 22px;
+  padding: 2px;
+  border-radius: 999px;
   border: 1px solid var(--color-divider);
-  background: var(--color-text);
-  opacity: 0.3;
+  background: transparent;
   cursor: pointer;
-  transition: opacity 160ms ease, border-color 160ms ease;
+  transition: border-color 160ms ease;
+}
+
+.theme-toggle-knob {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--color-text);
+  opacity: 0.45;
+  transition: transform 200ms ease, opacity 160ms ease;
+}
+
+.theme-toggle[aria-checked="false"] .theme-toggle-knob {
+  transform: translateX(18px);
 }
 
 .theme-toggle:hover {
-  opacity: 0.75;
   border-color: var(--color-accent);
+}
+
+.theme-toggle:hover .theme-toggle-knob {
+  opacity: 0.85;
 }
 
 .nav-burger {
@@ -461,8 +510,11 @@ figcaption {
    Home
    ============================================================ */
 
+/* Less headroom than the other pages: the sticky header keeps its box even
+   while it is faded out, so the page's own top padding is stacked on top of
+   an apparently empty strip. Bottom padding is unchanged. */
 .home {
-  padding: var(--space-48) var(--space-16);
+  padding: var(--space-24) var(--space-16) var(--space-48);
 }
 
 .home-inner {
@@ -471,11 +523,96 @@ figcaption {
 }
 
 .home-hero {
-  display: grid;
-  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
-  gap: var(--space-32);
-  align-items: center;
   margin-bottom: var(--space-56);
+}
+
+/* The guarantee that the statement below never appears on landing: the
+   photograph and its caption together are exactly one viewport tall, so the
+   fold falls between the caption and the statement no matter the window.
+
+   `svh` — the *small* viewport height, with mobile browser chrome expanded —
+   is the right unit here: that is the state a page is in when it is landed
+   on. `vh`/`lvh` would let the statement show through on a phone.
+
+   The subtracted terms are everything above the photograph: the header, which
+   keeps its box even while faded out, and `.home`'s top padding. Both are
+   tokens so this cannot silently drift. */
+.home-hero-viewport {
+  display: flex;
+  flex-direction: column;
+  height: calc(100svh - var(--header-height) - var(--space-24));
+  /* Only reached on a window shorter than ~324px, where nothing would fit
+     anyway. Above that the guarantee is unconditional. */
+  min-height: 180px;
+}
+
+/* One centred stage with every frame absolutely stacked inside it, so the
+   crossfade never reflows the page. It takes whatever height the wrapper has
+   left after the caption. The width cap is what `PRESETS.hero` in
+   lib/photo.js describes — change one and change the other. */
+.home-hero-stage {
+  position: relative;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  flex: 1 1 auto;
+  /* Without this a flex item refuses to shrink below its content. */
+  min-height: 0;
+  animation: hero-fade-in 1.2s ease both;
+}
+
+.home-hero-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  /* Only the visible frame is clickable; the stacked ones sit on top of it
+     otherwise and would swallow the link. */
+  pointer-events: none;
+  transition: opacity 1s ease;
+}
+
+.home-hero-slide.is-active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.home-hero-slide figure,
+.home-hero-slide picture,
+.home-hero-slide img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  margin: 0;
+}
+
+.home-hero-caption {
+  flex: 0 0 auto;
+  margin: var(--space-12) auto 0;
+  text-align: center;
+  font-size: var(--text-caption);
+  line-height: var(--leading-body);
+  opacity: 0.7;
+  /* Reserved so a caption wrapping to two lines does not shift the block
+     below it mid-crossfade. */
+  min-height: calc(var(--text-caption) * var(--leading-body) * 2);
+  transition: opacity 0.4s ease;
+}
+
+.home-hero-caption.is-fading {
+  opacity: 0;
+}
+
+.home-hero-intro {
+  /* Deliberately generous: the statement is meant to be arrived at after the
+     photograph, not glimpsed under it. */
+  margin-top: var(--space-56);
+  margin-bottom: var(--space-56);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .home-hero-statement {
@@ -499,47 +636,75 @@ figcaption {
   margin-top: var(--space-12);
 }
 
-.home-hero-image {
-  width: 100%;
-  height: min(660px, calc(100svh - 260px));
-  min-height: 320px;
-  position: relative;
+@keyframes hero-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
-.home-hero-image figure,
-.home-hero-image picture,
-.home-hero-image img {
-  position: absolute;
-  inset: 0;
+/* The projects below the hero are a quiet index, not a second gallery: a
+   thumbnail with its title and meta beside it, one row each. The photographs
+   have already had their say above. */
+.project-list {
+  list-style: none;
+  padding: 0;
+  /* Wide enough for the thumbnail plus a comfortable measure of text, then
+     centred on the page as one block. */
+  max-width: 780px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-24);
+}
+
+.project-list-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  text-decoration: none;
+  color: var(--color-text);
+}
+
+.project-list-thumb {
+  flex: none;
+  width: 480px;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+}
+
+.project-list-thumb figure,
+.project-list-thumb picture,
+.project-list-thumb img {
+  display: block;
+  margin: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.home-insets {
+.project-list-text {
   display: flex;
   flex-direction: column;
-  gap: var(--space-56);
+  gap: var(--space-3);
+  min-width: 0;
 }
 
-/* Alternating inset widths, repeating every four so the rhythm survives
-   projects being added. */
-.home-inset:nth-child(4n + 1) {
-  width: 76%;
+.project-list-title {
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
 }
 
-.home-inset:nth-child(4n + 2) {
-  width: 88%;
-  margin-left: auto;
+.project-list-item:hover .project-list-title {
+  color: var(--color-accent);
 }
 
-.home-inset:nth-child(4n + 3) {
-  width: 70%;
-}
-
-.home-inset:nth-child(4n + 4) {
-  width: 52%;
-  margin-left: auto;
+.project-list-meta {
+  font-size: 14px;
+  opacity: 0.55;
 }
 
 /* ============================================================
@@ -751,23 +916,11 @@ figcaption {
   }
 
   .home-hero {
-    grid-template-columns: minmax(0, 1fr);
-    align-items: start;
-    gap: var(--space-16);
     margin-bottom: var(--space-32);
   }
 
-  .home-hero-image {
-    height: 62vh;
-  }
-
-  .home-insets {
-    gap: var(--space-32);
-  }
-
-  .home-inset:nth-child(n) {
-    width: 100%;
-    margin-left: 0;
+  .project-list-thumb {
+    width: 40%;
   }
 
   .projects-grid,
@@ -781,7 +934,7 @@ figcaption {
   }
 
   .site-header {
-    padding: var(--space-8);
+    padding: 0 var(--space-8);
   }
 
   .site-footer {
