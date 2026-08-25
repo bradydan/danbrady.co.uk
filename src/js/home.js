@@ -10,42 +10,63 @@
 
   var slides = stage.querySelectorAll("[data-hero-slide]");
   var caption = document.querySelector("[data-hero-caption]");
-  if (slides.length < 2) return;
+  var prev = stage.querySelector("[data-hero-prev]");
+  var next = stage.querySelector("[data-hero-next]");
 
-  // With one frame there is nothing to cycle, and someone who has asked for
-  // reduced motion should get exactly that: the first frame, held.
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  // With a single frame there is nothing to move between, so the controls
+  // would be a lie. Take them out rather than leave them inert.
+  if (slides.length < 2) {
+    if (prev) prev.remove();
+    if (next) next.remove();
+    return;
+  }
+
+  // Someone who has asked for reduced motion gets no automatic movement — but
+  // they still get the controls, so the sequence remains theirs to browse.
+  var autoplay = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   var index = 0;
   var timer;
   var captionTimer;
 
-  function advance() {
-    var next = (index + 1) % slides.length;
+  function goTo(target) {
+    var n = (target + slides.length) % slides.length;
+    if (n === index) return;
     slides[index].classList.remove("is-active");
-    slides[next].classList.add("is-active");
-    index = next;
+    slides[n].classList.add("is-active");
+    index = n;
 
     if (!caption) return;
     caption.classList.add("is-fading");
     clearTimeout(captionTimer);
     captionTimer = setTimeout(function () {
-      caption.textContent = slides[next].getAttribute("data-caption") || "";
+      caption.textContent = slides[n].getAttribute("data-caption") || "";
       caption.classList.remove("is-fading");
     }, CAPTION_FADE_MS);
   }
 
   function start() {
     stop();
-    timer = setInterval(advance, CYCLE_MS);
+    if (autoplay) timer = setInterval(function () { goTo(index + 1); }, CYCLE_MS);
   }
   function stop() {
     clearInterval(timer);
   }
 
+  // Stepping by hand restarts the clock, so a frame just chosen gets its full
+  // turn rather than the remainder of the previous one.
+  function step(by) {
+    return function () {
+      goTo(index + by);
+      start();
+    };
+  }
+  if (prev) prev.addEventListener("click", step(-1));
+  if (next) next.addEventListener("click", step(1));
+
   // Hovering is someone looking at the frame in front of them; pausing lets
-  // them. Focus counts too, so a keyboard visitor tabbing onto the link is
-  // not moved off it mid-read.
+  // them. Focus counts too, so a keyboard visitor tabbing onto the controls is
+  // not moved off mid-read.
   stage.addEventListener("mouseenter", stop);
   stage.addEventListener("mouseleave", start);
   stage.addEventListener("focusin", stop);
@@ -78,9 +99,11 @@
   }
 
   function hide() {
-    // Never pull the header out from under a focused link — that is the one
+    // Never pull the chrome out from under a focused control — that is the one
     // case where the visitor is using it without moving a cursor.
-    if (header && header.contains(document.activeElement)) return;
+    var active = document.activeElement;
+    if (header && header.contains(active)) return;
+    if (active && active.closest && active.closest(".home-hero-nav")) return;
     html.classList.add("chrome-hidden");
   }
 
@@ -92,13 +115,13 @@
   }
 
   // `keydown` and `focusin` are here because a keyboard visitor has no cursor
-  // to move; without them the header would be unreachable except through the
-  // :focus-within rule in the stylesheet.
+  // to move; without them the chrome would be unreachable except through the
+  // focus rules in the stylesheet.
   ["mousemove", "wheel", "scroll", "keydown", "focusin"].forEach(function (evt) {
     window.addEventListener(evt, wake, { passive: true });
   });
 
-  // Below the breakpoint there is no cursor, so the header simply stays put.
+  // Below the breakpoint there is no cursor, so the chrome simply stays put.
   function syncBreakpoint() {
     if (touch.matches) {
       clearTimeout(idleTimer);
@@ -109,7 +132,7 @@
   syncBreakpoint();
 
   // The opening seconds belong to the photograph: movement during them is
-  // ignored outright, and afterwards the header still waits to be asked.
+  // ignored outright, and afterwards the chrome still waits to be asked.
   setTimeout(function () {
     locked = false;
   }, LOCK_MS);

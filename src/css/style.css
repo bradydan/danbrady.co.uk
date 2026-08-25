@@ -321,12 +321,18 @@ figcaption {
   transition: opacity 1s ease;
 }
 
-.chrome-hidden .site-header {
+.chrome-auto .home-hero-nav {
+  transition: opacity 1s ease, border-color 160ms ease;
+}
+
+.chrome-hidden .site-header,
+.chrome-hidden .home-hero-nav {
   opacity: 0;
   pointer-events: none;
 }
 
-.chrome-hidden .site-header:focus-within {
+.chrome-hidden .site-header:focus-within,
+.chrome-hidden .home-hero-nav:focus-visible {
   opacity: 1;
   pointer-events: auto;
 }
@@ -510,11 +516,11 @@ figcaption {
    Home
    ============================================================ */
 
-/* Less headroom than the other pages: the sticky header keeps its box even
-   while it is faded out, so the page's own top padding is stacked on top of
-   an apparently empty strip. Bottom padding is unchanged. */
+/* Barely any headroom: the sticky header keeps its box even while it is faded
+   out, so any top padding here is stacked on top of an apparently empty strip.
+   Bottom padding is unchanged. */
 .home {
-  padding: var(--space-24) var(--space-16) var(--space-48);
+  padding: var(--space-8) var(--space-16) var(--space-48);
 }
 
 .home-inner {
@@ -534,13 +540,18 @@ figcaption {
    is the right unit here: that is the state a page is in when it is landed
    on. `vh`/`lvh` would let the statement show through on a phone.
 
-   The subtracted terms are everything above the photograph: the header, which
-   keeps its box even while faded out, and `.home`'s top padding. Both are
-   tokens so this cannot silently drift. */
+   The subtracted terms are everything above the photograph — the header, which
+   keeps its box even while faded out, and `.home`'s top padding — plus a
+   deliberate margin of air below the caption, without which the block sits
+   flush against the fold and reads as hanging too low. All three are tokens so
+   this cannot silently drift. The bottom term must stay smaller than
+   `.home-hero-intro`'s top margin, or the statement creeps into view. */
 .home-hero-viewport {
   display: flex;
   flex-direction: column;
-  height: calc(100svh - var(--header-height) - var(--space-24));
+  height: calc(
+    100svh - var(--header-height) - var(--space-8) - var(--space-32)
+  );
   /* Only reached on a window shorter than ~324px, where nothing would fit
      anyway. Above that the guarantee is unconditional. */
   min-height: 180px;
@@ -576,6 +587,10 @@ figcaption {
   pointer-events: auto;
 }
 
+/* `contain`, not `cover`: the stage is a fixed bounding box that every frame
+   sits inside, so a portrait photograph is shown whole rather than cropped to
+   a landscape shape. The trade-off is deliberate — a frame whose proportions
+   differ from the box is letterboxed instead of filled. */
 .home-hero-slide figure,
 .home-hero-slide picture,
 .home-hero-slide img {
@@ -583,8 +598,68 @@ figcaption {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   margin: 0;
+}
+
+/* Previous/next. Overlaid on the photograph by default and moved out beside it
+   once the window is wide enough to hold them clear of the frame. */
+.home-hero-nav {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--color-divider);
+  border-radius: 50%;
+  background: var(--color-bg);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: border-color 160ms ease, opacity 160ms ease;
+}
+
+.home-hero-nav svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.7;
+}
+
+.home-hero-nav:hover {
+  border-color: var(--color-accent);
+}
+
+.home-hero-nav:hover svg {
+  opacity: 1;
+}
+
+[data-hero-prev] {
+  left: var(--space-4);
+}
+
+[data-hero-next] {
+  right: var(--space-4);
+}
+
+/* 1160px is the narrowest window where the 1000px stage leaves room either
+   side for a 44px control plus a gap, without pushing past the page padding. */
+@media (min-width: 1160px) {
+  [data-hero-prev] {
+    left: calc(-1 * var(--space-24) - var(--space-4));
+  }
+
+  [data-hero-next] {
+    right: calc(-1 * var(--space-24) - var(--space-4));
+  }
 }
 
 .home-hero-caption {
@@ -911,8 +986,10 @@ figcaption {
     display: flex;
   }
 
+  /* Top padding must stay the `--space-8` that `.home-hero-viewport` subtracts,
+     or the hero block hangs lower here than it does on a desktop. */
   .home {
-    padding: var(--space-24) var(--space-8);
+    padding: var(--space-8) var(--space-8) var(--space-24);
   }
 
   .home-hero {

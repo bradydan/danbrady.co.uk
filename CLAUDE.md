@@ -219,7 +219,10 @@ matter**, not a projects collection — entries are `{src, alt, caption, href}`.
 Every frame is rendered by the `{% image %}` shortcode at build time and
 absolutely stacked in `.home-hero-stage`; JS only toggles `.is-active`. Never
 build a slide's URL in JS, for the same reason the lightbox is fed by a
-filter. Only the first frame is `eager`. The home page still has **no `<h1>`**
+filter. Only the first frame is `eager`. Slides use `object-fit: contain`, not
+`cover`: the stage is a fixed bounding box a portrait frame must fit inside
+whole. One consequence — `PRESETS.hero`'s `sizes` describes the *box*, so a
+frame narrower than the box fetches a file wider than it displays. The home page still has **no `<h1>`**
 — `.home-hero-statement` sits under the photograph, and it is a `<p>`.
 
 **The home hero is sized to guarantee the fold falls below the caption.**
@@ -245,6 +248,13 @@ same anti-flash reason as the theme. Three things about it are load-bearing:
 - There is no cursor to go still below 900px, so the header never auto-hides
   there. The breakpoint is duplicated in the blocking script and `style.css`;
   they must agree.
+
+**The hero's prev/next controls ride the header's reveal cycle**, sharing the
+`.chrome-hidden` rules rather than owning a timer. They live inside
+`.home-hero-stage` so they can be positioned against the photograph, and move
+from overlaying it to sitting beside it at 1160px — the narrowest window where
+a 44px control clears the 1000px stage without pushing past the page padding.
+`home.js` removes them outright when there is only one frame.
 
 **The theme control is a `role="switch"`, and `aria-checked` is its only
 state.** The knob position is styled from `[aria-checked="false"]`, so the

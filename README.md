@@ -158,8 +158,15 @@ hero:
   it goes to the projects index.
 
 Add or remove entries freely; one entry is fine and the hero simply holds
-still. The frames change every five seconds and pause while the pointer is
-over them, so a visitor can stop on one and look at it.
+still, with the arrows taken away. The frames change every five seconds and
+pause while the pointer is over them, so a visitor can stop on one and look at
+it. Arrows either side step through by hand; they appear and disappear with
+the header.
+
+**Portrait photographs are welcome.** Every frame is fitted inside the same
+box rather than cropped to fill it, so an upright picture is shown whole, with
+space either side of it. The flip side is that a picture whose shape differs
+from the box has that space rather than filling the screen.
 
 The lines of text below the photograph are in the body of `src/index.njk`:
 
